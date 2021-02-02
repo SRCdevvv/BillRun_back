@@ -59,8 +59,8 @@ class Review(models.Model):
     product_score = models.FloatField()
     user_score = models.FloatField()
     deal_id = models.OneToOneField(Deal, default=False, on_delete=models.CASCADE)
-    # product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    # user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, default=False, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, default=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user_id.user.username} - {self.product_id.name}"
