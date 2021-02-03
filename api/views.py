@@ -52,7 +52,33 @@ class UserDetail(APIView):
 
 
 #### Product
-class ProductList(APIView):
+class LendProductList(APIView): #빌려주는 상품 목록
+    def get(self, request):
+        model = Product.objects.filter(category=True)
+        serializer = ProductSerializer(model, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class RentProductList(APIView): #빌리는 상품 목록
+    def get(self, request):
+        model = Product.objects.filter(category=False)
+        serializer = ProductSerializer(model, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class ProductList(APIView): #전체 상품 목록
     def get(self, request):
         model = Product.objects.all()
         serializer = ProductSerializer(model, many=True)
@@ -65,8 +91,7 @@ class ProductList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-
-class ProductDetail(APIView):
+class ProductDetail(APIView): #상품 상세보기
     def get_product(self, product_id):
         try:
             model = Product.objects.get(id=product_id)
