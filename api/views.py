@@ -101,14 +101,14 @@ class ProductDetail(APIView): #상품 상세보기
 
     def get(self, request, product_id):
         if not self.get_product(product_id):
-            return Response(f'User with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = ProductSerializer(self.get_product(product_id))
         return Response(serializer.data)
 
     def put(self, request, product_id):
         if not self.get_product(product_id):
-            return Response(f'User with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(self.get_product(product_id), data=request.data)
+            return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(self.get_product(product_id), data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -116,7 +116,7 @@ class ProductDetail(APIView): #상품 상세보기
 
     def delete(self, request, product_id):
         if not self.get_product(product_id):
-            return Response(f'User with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         model = self.get_product(product_id)
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

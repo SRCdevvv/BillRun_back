@@ -9,13 +9,21 @@ class UUSerializer(serializers.ModelSerializer):
         # fields = ('username')
 
 class UserSerializer(serializers.ModelSerializer):
-    username = UUSerializer(read_only=True)
+    place = serializers.CharField(required=False)
+    username = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = User
-        fields = ('id', 'place', 'username')
+        fields = ('id', 'username', 'place')
         # fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
+    # user = UserSerializer(read_only=True)
+    name = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
+    caution = serializers.CharField(required=False)
+    price = serializers.CharField(required=False)
+    price_prop = serializers.CharField(required=False)
+    user_id = UserSerializer(read_only=True)
+    class Meta:     
         model = Product
         fields = '__all__'

@@ -15,5 +15,5 @@ urlpatterns = [
 
     #상품 전체보기(일단 만들어둠)
     path('product_list/', ProductList.as_view(), name="product_list"),
-    # path('product_list/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
+    path('product_list/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
 ]

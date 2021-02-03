@@ -32,7 +32,10 @@ class Product(models.Model):
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name}"
+        if self.category:
+            return f"[빌려드림] {self.name} - {self.user_id.user.username}"
+        else:
+            return f"[빌림] {self.name} - {self.user_id.user.username}"
 
 
 class Deal(models.Model):
@@ -51,7 +54,10 @@ class Deal(models.Model):
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user_id.user.username} - {self.product_id.name}"
+        if self.product_id.category:
+            return f"{self.id}) [빌려드림] {self.product_id.user_id.user.username} >> {self.user_id.user.username} - {self.product_id.name}"
+        else:
+            return f"{self.id}) [빌림] {self.product_id.user_id.user.username} >> {self.user_id.user.username} - {self.product_id.name}"
 
 
 class Review(models.Model):
@@ -63,4 +69,4 @@ class Review(models.Model):
     user_id = models.ForeignKey(User, default=False, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user_id.user.username} - {self.product_id.name}"
+        return f"{self.deal_id.id}) {self.deal_id.product_id.name} - {self.user_id.user.username}"
