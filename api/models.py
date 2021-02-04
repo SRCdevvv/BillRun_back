@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, default='', unique=True)
+    money = models.IntegerField(default=0)
     level = models.CharField(max_length=10, default='', null=True, blank=True)
     place = models.CharField(max_length=50)
 
