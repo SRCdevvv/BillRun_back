@@ -58,6 +58,7 @@ class Deal(models.Model):
     )
     deal_prop = models.CharField(max_length=10, choices=DEALPROP)
     contract = models.BooleanField(default=False)
+    contract2 = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
