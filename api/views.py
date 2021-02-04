@@ -19,14 +19,24 @@ class UserList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-
-class UserDetail(APIView):
+class UserDetail(APIView): #마이페이지
     def get_user(self, user_id):
         try:
             model = User.objects.get(id=user_id)
+            # products = Product.objects.filter(user_id_id=user_id)
             return model
         except User.DoesNotExist:
             return
+
+    # def sum_price(self, request, user_id):
+    #     if not self.get_user(user_id):
+    #         return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+    #     serializer = UserSerializer(self.get_user(user_id), data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.object.level = 
+    #         serializer.save()
+    #         return Response (serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
     def get(self, request, user_id):
         if not self.get_user(user_id):
@@ -40,7 +50,7 @@ class UserDetail(APIView):
         serializer = UserSerializer(self.get_user(user_id), data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response (serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
     def delete(self, request, user_id):
@@ -49,6 +59,12 @@ class UserDetail(APIView):
         model = self.get_user(user_id)
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+## 마이페이지
+# 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
+# 빌려줘서 번 돈
+# 찜 목록(Favorite)
+# 유저의 거래 내역(Deal) - 대면/비대면 필터링
 
 
 #### Product
@@ -120,3 +136,16 @@ class ProductDetail(APIView): #상품 상세보기
         model = self.get_product(product_id)
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+#### Deal
+#본인의 거래 내역
+
+#특정 거래 내역 보기
+
+#거래상태 완료 시 계약서 삭제
+
+
+#### Review
+#거래에 대한 리뷰 작성 - 해당 거래의 유저들만 리뷰 한번만! 작성 가능
+#상품, 유저점수는 0.5~5로 0.5단위

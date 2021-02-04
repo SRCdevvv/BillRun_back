@@ -123,13 +123,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', #조건이 맞는지 확인
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication', #username, pw
-        'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
-        'rest_framework.authentication.TokenAuthentication', #파이썬 라이브러리에서 중요!
-    )
-} 
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated', #조건이 맞는지 확인
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.BasicAuthentication', #username, pw
+#         'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
+#         'rest_framework.authentication.TokenAuthentication', #파이썬 라이브러리에서 중요!
+#     )
+# } 

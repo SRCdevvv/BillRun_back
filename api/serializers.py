@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User as UU
 from api.models import *
+import datetime
 
 class UUSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,8 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = User
-        fields = ('id', 'username', 'place')
         # fields = '__all__'
+        fields = ('id', 'place', 'username', 'nickname', 'level')
 
 class ProductSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)
