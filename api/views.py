@@ -19,11 +19,33 @@ class UserList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
+## 마이페이지
+# 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
+# 빌려줘서 번 돈
+# 찜 목록(Favorite)
+# 유저의 거래 내역(Deal) - 대면/비대면 필터링
+
+
 class UserDetail(APIView): #마이페이지
-    def get_user(self, user_id):
+
+    def get_user(self, user_id): #특정 유저 가져오기
         try:
             model = User.objects.get(id=user_id)
-            # products = Product.objects.filter(user_id_id=user_id)
+
+            ##내가 빌려준 거래의 상품들 가져오기
+            #빌려드림에서 내가 올린 상품
+            p1 = Product.objects.filter(user_id_id=model.id, category=True, deal__deal_prop='COM')
+            #빌림에서 내가 빌려준 상품
+            p2 = Product.objects.filter(deal__user_id=model.id, category=False, deal__deal_prop='COM')
+
+            value = 0
+            for x in p1:
+                value += x.price
+            for y in p2:
+                value += x.price
+
+            model.level = str(value)
+            model.save()
             return model
         except User.DoesNotExist:
             return
@@ -60,11 +82,12 @@ class UserDetail(APIView): #마이페이지
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-## 마이페이지
-# 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
-# 빌려줘서 번 돈
-# 찜 목록(Favorite)
-# 유저의 거래 내역(Deal) - 대면/비대면 필터링
+class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록
+    def get(self, request, user_id):
+        model = User.objects.get(id=user_id)
+        # deals_a = Deal.objects.filter(user_id_id= user_id)
+        return Response(serializer.data)
+
 
 
 #### Product

@@ -4,12 +4,12 @@ from django.contrib.auth.models import User
 # Create your models here.
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=10, default='')
+    nickname = models.CharField(max_length=10, default='', unique=True)
     level = models.CharField(max_length=10, default='', null=True, blank=True)
     place = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.nickname}({self.user.username})"
+        return f"{self.id}) {self.nickname}({self.user.username})"
 
 
 class Product(models.Model):
