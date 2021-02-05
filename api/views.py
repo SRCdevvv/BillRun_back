@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
+from .models import *
 
 # Create your views here.
 #### User
@@ -17,7 +18,7 @@ class UserList(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ## 마이페이지
 # 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
@@ -71,7 +72,7 @@ class UserDetail(APIView): #마이페이지
         serializer = UserSerializer(self.get_user(user_id), data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response (serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
     def delete(self, request, user_id):
@@ -81,10 +82,11 @@ class UserDetail(APIView): #마이페이지
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록
+class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 아직 사용 안했고 추후 수정해야함!
     def get(self, request, user_id):
         model = User.objects.get(id=user_id)
         # deals_a = Deal.objects.filter(user_id_id= user_id)
+        # serializer = UserSerializer(model)
         return Response(serializer.data)
 
 
@@ -205,7 +207,7 @@ class ReviewList(APIView): #상품 목록 (이건 그냥 개발시 참고용!)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ReviewDetail(APIView): 
     def get_review(self, product_id):#특정 상품에 대한 리뷰 가져오기
@@ -225,7 +227,7 @@ class ReviewDetail(APIView):
             # product = Product.objects.get(id=product_id)
             # model = Review.objects.filter(deal_id_product_id_id=product_id)
             
-            model = Review.objects.filter(deal_id=product_id) #일단 막 써놓음. 수정해야함!
+            model = Review.objects.filter(product_id_id=product_id) #일단 막 써놓음. 수정해야함!
             return model
         except Review.DoesNotExist:
             return
@@ -233,13 +235,13 @@ class ReviewDetail(APIView):
     def get(self, request, product_id):
         if not self.get_review(product_id):
             return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ReviewSerializer(self.get_review(product_id))
+        serializer = ReviewSerializer(self.get_review(product_id), many=True)
         return Response(serializer.data)
 
     def put(self, request, product_id):
         if not self.get_review(product_id):
             return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ReviewSerializer(self.get_review(product_id), data=request.data)
+        serializer = ReviewSerializer(self.get_review(product_id), data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

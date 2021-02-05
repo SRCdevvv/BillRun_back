@@ -14,6 +14,7 @@ class User(models.Model):
 
 
 class Product(models.Model):
+    DEFAULT_PK=1
     PRICEPROP = (
         ('Day', 'Per Day'),
         ('30m', 'Per half hour'),
@@ -41,9 +42,9 @@ class Product(models.Model):
 
     def __str__(self):
         if self.category:
-            return f"[빌려드림] {self.name} - {self.user_id.nickname}"
+            return f"{self.id}) [빌려드림]{self.name} - {self.user_id.nickname}"
         else:
-            return f"[빌림] {self.name} - {self.user_id.nickname}"
+            return f"{self.id}) [빌림]{self.name} - {self.user_id.nickname}"
 
 
 class Deal(models.Model):
@@ -69,9 +70,9 @@ class Deal(models.Model):
 
     def __str__(self):
         if self.product_id.category:
-            return f"{self.id}) [빌려드림] {self.product_id.user_id.nickname} >> {self.user_id.nickname} - {self.product_id.name}"
+            return f"{self.id}) [빌려드림]{self.product_id.name} ({self.product_id.user_id.nickname} >> {self.user_id.nickname})"
         else:
-            return f"{self.id}) [빌림] {self.product_id.user_id.nickname} >> {self.user_id.nickname} - {self.product_id.name}"
+            return f"{self.id}) [빌림]{self.product_id.name} ({self.product_id.user_id.nickname} >> {self.user_id.nickname})"
 
 
 class Review(models.Model):
@@ -80,10 +81,10 @@ class Review(models.Model):
     user_score = models.FloatField()
     deal_id = models.ForeignKey(Deal, default=False, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, default=False, on_delete=models.CASCADE)
-    # product_id = models.ForeignKey(Product, default=False, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, default=Product.DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.deal_id.id}) {self.deal_id.product_id.name} - {self.user_id.nickname}"
+        return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
 
 
 class Favorite(models.Model):
