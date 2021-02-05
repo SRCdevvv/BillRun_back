@@ -8,12 +8,16 @@ urlpatterns = [
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
     path('lend_product_list/<int:product_id>', ProductDetail.as_view(), name="lend_product_detail"),
-    # path('lend_product_list/<int:product_id>/new_review', ReviewView.as_view(), name="new_review"),
+    
+    #빌려드림 상품에 대한 리뷰 작성
+    # path('lend_product_list/<int:product_id>/new_review', ReviewDetail.as_view(), name="new_review_lend"),
 
     #빌림
     path('rent_product_list/', RentProductList.as_view(), name="rent_product_list"),
     path('rent_product_list/<int:product_id>', ProductDetail.as_view(), name="rent_product_detail"),
-    # path('rent_product_list/<int:product_id>/new_review', ReviewView.as_view(), name="new_review"),
+    
+    #빌림 상품에 대한 리뷰 작성
+    # path('rent_product_list/<int:product_id>/new_review', ReviewDetail.as_view(), name="new_review_rent"),
 
     #상품 등록
     path('product_list/', ProductList.as_view(), name="product_list"),
@@ -23,7 +27,11 @@ urlpatterns = [
 
     #거래 진행
     path('deal_list/', DealList.as_view(), name="deal_list"),
-    path('deal_list/<int:deal_id>', DealDetail.as_view(), name="deal_list")
+    path('deal_list/<int:deal_id>', DealDetail.as_view(), name="deal_datail"),
+
+    #리뷰
+    path('review/', ReviewList.as_view(), name="review_list"),
+    path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"),
 
 
 ]
