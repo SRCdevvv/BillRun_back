@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator 
 
 # Create your models here.
 class User(models.Model):
@@ -77,8 +78,8 @@ class Deal(models.Model):
 
 class Review(models.Model):
     post = models.TextField()
-    product_score = models.FloatField()
-    user_score = models.FloatField()
+    product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     deal_id = models.ForeignKey(Deal, default=False, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, default=False, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, default=Product.DEFAULT_PK, on_delete=models.CASCADE)

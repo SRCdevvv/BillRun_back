@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from .models import *
+import datetime
 
 # Create your views here.
 #### User
-class UserList(APIView):
+class UserList(APIView): #전체 유저 리스트(정확하지 않음)
     def get(self, request):
         model = User.objects.all()
         serializer = UserSerializer(model, many=True)
@@ -32,19 +33,17 @@ class UserDetail(APIView): #마이페이지
         try:
             model = User.objects.get(id=user_id)
 
-            ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
-            #빌려드림에서 내가 올린 상품
-            p1 = Product.objects.filter(user_id_id=model.id, category=True, deal__deal_prop='COM')
-            #빌림에서 내가 빌려준 상품
-            p2 = Product.objects.filter(deal__user_id=model.id, category=False, deal__deal_prop='COM')
-
             value = 0
-            for x in p1:
+            ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
+            #빌려드림에서 내가 올린 상품의 금액
+            for x in Product.objects.filter(user_id_id=model.id, category=True, deal__deal_prop='COM'):
+                # period = 
                 value += x.price
-            for y in p2:
-                value += x.price
+            #빌림에서 내가 빌려준 상품의 금액
+            for y in Product.objects.filter(deal__user_id=model.id, category=False, deal__deal_prop='COM'):
+                value += y.price
 
-            model.money = value
+            model.money = value #내가 번 돈 저장
             model.save()
             return model
         except User.DoesNotExist:
@@ -202,9 +201,10 @@ class ReviewList(APIView): #상품 목록 (이건 그냥 개발시 참고용!)
         return Response(serializer.data)
 
     def post(self, request):
-        # if request.data.deal_id ==
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
+            # serializer.object.product_id.user_id.id
+            # serializer.object.deal_id.user_id.id
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -227,7 +227,7 @@ class ReviewDetail(APIView):
             # product = Product.objects.get(id=product_id)
             # model = Review.objects.filter(deal_id_product_id_id=product_id)
             
-            model = Review.objects.filter(product_id_id=product_id) #일단 막 써놓음. 수정해야함!
+            model = Review.objects.filter(product_id_id=product_id)
             return model
         except Review.DoesNotExist:
             return
