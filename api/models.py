@@ -33,7 +33,7 @@ class Product(models.Model):
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
     place_option = models.BooleanField(default=True)
     deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def upload_photo(self, filename):
         path = 'api/photo/{}'.format(filename)
@@ -49,6 +49,7 @@ class Product(models.Model):
 
 
 class Deal(models.Model):
+    DEFAULT_PK=1
     DEALPROP = (
         ('Not', 'Not Yet'),
         ('PRO', 'In Progress'),
@@ -66,8 +67,8 @@ class Deal(models.Model):
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
     period = models.IntegerField()
     deal_option = models.CharField(max_length=10, default="", choices=DEALOP)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.product_id.category:
@@ -77,19 +78,21 @@ class Deal(models.Model):
 
 
 class Review(models.Model):
+    DEFAULT_PK=1
     post = models.TextField()
     product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    deal_id = models.ForeignKey(Deal, default=False, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, default=False, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, default=Product.DEFAULT_PK, on_delete=models.CASCADE)
+    deal_id = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    DEFAULT_PK=1
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product, blank=True)
 
     def __str__(self):
