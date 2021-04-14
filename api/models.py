@@ -1,14 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator 
+from django.utils import timezone
 
 # Create your models here.
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, default='', unique=True)
-    money = models.IntegerField(default=0)
+    money = models.IntegerField(default=None)
     level = models.CharField(max_length=10, default='', null=True, blank=True)
     place = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
+    
+    def upload_profile(self, filename):
+        path = 'api/user/{}'.format(filename)
+        return path
+
+    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True)
 
     def __str__(self):
         return f"{self.id}) {self.nickname}({self.user.username})"
@@ -21,19 +30,22 @@ class Product(models.Model):
         ('30m', 'Per half hour'),
         ('1h', 'Per hour'),
     )
-    DEALOP = (
-        ('F2F', 'Face to Face'),
-        ('Untact', 'Untact'),
-    )
-    category = models.BooleanField(default=True)
+    # DEALOP = (
+    #     ('F2F', 'Face to Face'),
+    #     ('Untact', 'Untact'),
+    # )
+
+    category = models.BooleanField(default=True) 
     name = models.CharField(max_length=50)
     description = models.TextField()
     caution = models.TextField()
     price = models.IntegerField()
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
     place_option = models.BooleanField(default=True)
-    deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
+    # deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
     user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def upload_photo(self, filename):
         path = 'api/photo/{}'.format(filename)
@@ -55,10 +67,10 @@ class Deal(models.Model):
         ('PRO', 'In Progress'),
         ('COM', 'Complete'),
     )
-    DEALOP = (
-        ('F2F', 'Face to Face'),
-        ('Untact', 'Untact'),
-    )
+    # DEALOP = (
+    #     ('F2F', 'Face to Face'),
+    #     ('Untact', 'Untact'),
+    # )
     deal_prop = models.CharField(max_length=10, choices=DEALPROP)
     contract = models.BooleanField(default=False)
     contract2 = models.BooleanField(default=False)
@@ -66,7 +78,7 @@ class Deal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
     period = models.IntegerField()
-    deal_option = models.CharField(max_length=10, default="", choices=DEALOP)
+    # deal_option = models.CharField(max_length=10, default="", choices=DEALOP)
     user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
@@ -85,6 +97,8 @@ class Review(models.Model):
     deal_id = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def __str__(self):
         return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
@@ -94,6 +108,8 @@ class Favorite(models.Model):
     DEFAULT_PK=1
     user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product, blank=True)
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def __str__(self):
         return f"{self.user.nickname}의 찜 목록"
