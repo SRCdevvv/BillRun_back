@@ -19,6 +19,7 @@ from api.views import *
 from django.conf.urls import url
 
 urlpatterns = [
+    path('', main, name="main"),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     # url(r'^api/users_list/$', UserList.as_view(), name="user_list"),
