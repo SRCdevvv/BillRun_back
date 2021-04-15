@@ -6,7 +6,10 @@ from .serializers import *
 from .models import *
 import datetime
 
-# Create your views here.
+# main page
+def main(request):
+    return render(request, 'api/main.html')
+
 #### User
 class UserList(APIView): #전체 유저 리스트(정확하지 않음)
     def get(self, request):
