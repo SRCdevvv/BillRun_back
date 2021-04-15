@@ -103,6 +103,12 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
 
+    def upload_review(self, filename):
+        path = 'review/{}'.format(filename)
+        return path
+
+    photo = models.ImageField(upload_to=upload_review, null=True, blank=True)
+
 
 class Favorite(models.Model):
     DEFAULT_PK=1

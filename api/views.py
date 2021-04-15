@@ -66,7 +66,7 @@ class UserDetail(APIView): #마이페이지
     def get(self, request, user_id):
         if not self.get_user(user_id):
             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(self.get_user(user_id))
+        serializer = UserSerializer(self.get_user(user_id), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, user_id):
@@ -131,7 +131,7 @@ class ProductDetail(APIView): #상품 상세보기
     def get(self, request, product_id):
         if not self.get_product(product_id):
             return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(self.get_product(product_id))
+        serializer = ProductSerializer(self.get_product(product_id), context={'request': request})
         return Response(serializer.data)
 
         #상품에 대한 리뷰 불러오기 추가!!!!!!!!!!!
@@ -140,7 +140,7 @@ class ProductDetail(APIView): #상품 상세보기
     def put(self, request, product_id):
         if not self.get_product(product_id):
             return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(self.get_product(product_id), data=request.data)
+        serializer = ProductSerializer(self.get_product(product_id), context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -159,7 +159,7 @@ class ProductDetail(APIView): #상품 상세보기
 class DealList(APIView): 
     def get(self, request): #전체 거래 목록
         model = Deal.objects.all()
-        serializer = DealSerializer(model, many=True)
+        serializer = DealSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -180,13 +180,13 @@ class DealDetail(APIView): #거래 수정(완료로)
     def get(self, request, deal_id):
         if not self.get_deal(deal_id):
             return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = DealSerializer(self.get_deal(deal_id))
+        serializer = DealSerializer(self.get_deal(deal_id), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, deal_id):
         if not self.get_deal(deal_id):
             return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = DealSerializer(self.get_deal(deal_id), data=request.data)
+        serializer = DealSerializer(self.get_deal(deal_id), context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
