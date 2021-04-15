@@ -3,6 +3,7 @@ from .views import *
 
 app_name='api'
 urlpatterns = [
+    path('', main, name="main"),
     path('user_list/', UserList.as_view(), name="user_list"),
     path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
 
