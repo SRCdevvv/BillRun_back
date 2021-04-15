@@ -14,7 +14,8 @@ def main(request):
 class UserList(APIView): #전체 유저 리스트(정확하지 않음)
     def get(self, request):
         model = User.objects.all()
-        serializer = UserSerializer(model, many=True)
+        # serializer = UserSerializer(model, many=True)
+        serializer = UserSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -97,19 +98,19 @@ class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 
 class LendProductList(APIView): #빌려주는 상품 목록
     def get(self, request):
         model = Product.objects.filter(category=True)
-        serializer = ProductSerializer(model, many=True)
+        serializer = ProductSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
 class RentProductList(APIView): #빌리는 상품 목록
     def get(self, request):
         model = Product.objects.filter(category=False)
-        serializer = ProductSerializer(model, many=True)
+        serializer = ProductSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
 class ProductList(APIView): #전체 상품 목록 (이건 그냥 개발시 참고용!)
     def get(self, request):
         model = Product.objects.all()
-        serializer = ProductSerializer(model, many=True)
+        serializer = ProductSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request):

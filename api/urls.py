@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import *
+from django.conf.urls import url, static
+from django.conf import settings
 
 app_name='api'
 urlpatterns = [
@@ -36,4 +38,4 @@ urlpatterns = [
     path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"),
 
 
-]
+] 

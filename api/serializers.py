@@ -12,10 +12,11 @@ class UUSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     place = serializers.CharField(required=False)
     username = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = User
         fields = '__all__'
-        # fields = ('id', 'place', 'username', 'nickname', 'money', 'level')
+        
 
 class ProductSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)
