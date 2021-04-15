@@ -14,7 +14,7 @@ class User(models.Model):
     updated_at = models.DateTimeField(auto_now = True, null= True)
     
     def upload_profile(self, filename):
-        path = 'api/user/{}'.format(filename)
+        path = 'user/{}'.format(filename)
         return path
 
     profile = models.ImageField(upload_to=upload_profile, null=True, blank=True)
@@ -48,7 +48,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def upload_photo(self, filename):
-        path = 'api/photo/{}'.format(filename)
+        path = 'photo/{}'.format(filename)
         return path
 
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True)
