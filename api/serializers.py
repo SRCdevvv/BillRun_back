@@ -5,9 +5,9 @@ import datetime
 
 class UUSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UU
-        fields = '__all__'
-        # fields = ('username')
+        model = User
+        # fields = '__all__'
+        fields = ('id', 'nickname')
 
 class UserSerializer(serializers.ModelSerializer):
     place = serializers.CharField(required=False)
@@ -43,4 +43,16 @@ class DealSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
+        fields = '__all__'
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    user = UUSerializer(read_only=True)
+    class Meta:
+        model = Favorite
+        fields = ('user', 'product')
+        # fields = '__all__'
+
+class NoticeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notice
         fields = '__all__'

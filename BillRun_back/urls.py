@@ -21,7 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', main, name="main"),
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name="admin"),
     path('api/', include('api.urls')),
     # url(r'^api/users_list/$', UserList.as_view(), name="user_list"),
     # path('api/user_list/', UserList.as_view(), name="user_list"),

@@ -11,7 +11,7 @@ def main(request):
     return render(request, 'api/main.html')
 
 #### User
-class UserList(APIView): #전체 유저 리스트(정확하지 않음)
+class UserList(APIView): #전체 유저 리스트
     def get(self, request):
         model = User.objects.all()
         # serializer = UserSerializer(model, many=True)
@@ -66,7 +66,7 @@ class UserDetail(APIView): #마이페이지
     def get(self, request, user_id):
         if not self.get_user(user_id):
             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(self.get_user(user_id))
+        serializer = UserSerializer(self.get_user(user_id), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, user_id):
@@ -124,14 +124,18 @@ class ProductDetail(APIView): #상품 상세보기
     def get_product(self, product_id):
         try:
             model = Product.objects.get(id=product_id)
+            model.hits += 1
+            model.save()
             return model
         except Product.DoesNotExist:
             return
 
     def get(self, request, product_id):
-        if not self.get_product(product_id):
+        p = self.get_product(product_id)
+        # if not self.get_product(product_id):
+        if not p:
             return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(self.get_product(product_id))
+        serializer = ProductSerializer(p, context={'request': request})
         return Response(serializer.data)
 
         #상품에 대한 리뷰 불러오기 추가!!!!!!!!!!!
@@ -140,7 +144,7 @@ class ProductDetail(APIView): #상품 상세보기
     def put(self, request, product_id):
         if not self.get_product(product_id):
             return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(self.get_product(product_id), data=request.data)
+        serializer = ProductSerializer(self.get_product(product_id), context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -159,7 +163,7 @@ class ProductDetail(APIView): #상품 상세보기
 class DealList(APIView): 
     def get(self, request): #전체 거래 목록
         model = Deal.objects.all()
-        serializer = DealSerializer(model, many=True)
+        serializer = DealSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -180,13 +184,13 @@ class DealDetail(APIView): #거래 수정(완료로)
     def get(self, request, deal_id):
         if not self.get_deal(deal_id):
             return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = DealSerializer(self.get_deal(deal_id))
+        serializer = DealSerializer(self.get_deal(deal_id), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, deal_id):
         if not self.get_deal(deal_id):
             return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = DealSerializer(self.get_deal(deal_id), data=request.data)
+        serializer = DealSerializer(self.get_deal(deal_id), context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -238,13 +242,13 @@ class ReviewDetail(APIView):
 
     def get(self, request, product_id):
         if not self.get_review(product_id):
-            return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = ReviewSerializer(self.get_review(product_id), many=True)
         return Response(serializer.data)
 
     def put(self, request, product_id):
         if not self.get_review(product_id):
-            return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = ReviewSerializer(self.get_review(product_id), data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
@@ -252,3 +256,82 @@ class ReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
+class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
+    def get(self, request): 
+        model = Favorite.objects.all()
+        serializer = FavoriteSerializer(model, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = FavoriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FavoriteDetail(APIView):
+    def get_favorite(self, user_id):#특정 유저에 대한 좋아요 가져오기
+        try:
+            model = Favorite.objects.filter(user_id=user_id)
+            return model
+        except Review.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_favorite(user_id):
+            return Response(f'Favorite with User id {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = FavoriteSerializer(self.get_favorite(user_id), many=True)
+        return Response(serializer.data)
+
+    def put(self, request, user_id):
+        if not self.get_favorite(user_id):
+            return Response(f'Favorite with User id {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = FavoriteSerializer(self.get_favorite(user_id), data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+#### Notice
+class NoticeList(APIView):
+    def get(self, request): 
+        model = Notice.objects.all()
+        serializer = NoticeSerializer(model, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = NoticeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NoticeDetail(APIView): #이벤트 상세보기
+    def get_notice(self, notice_id):
+        try:
+            model = Notice.objects.get(id=notice_id)
+            return model
+        except Notice.DoesNotExist:
+            return
+
+    def get(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = NoticeSerializer(self.get_notice(notice_id), context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = NoticeSerializer(self.get_notice(notice_id), context={'request': request}, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+    def delete(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        model = self.get_notice(notice_id)
+        model.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

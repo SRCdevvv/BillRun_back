@@ -3,11 +3,14 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.utils import timezone
 
+profile_default = 'user/default_user.png'
+photo_default = 'photo/no_image.png'
+
 # Create your models here.
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, default='', unique=True)
-    money = models.IntegerField(default=None)
+    money = models.IntegerField(default=0)
     level = models.CharField(max_length=10, default='', null=True, blank=True)
     place = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
@@ -17,7 +20,7 @@ class User(models.Model):
         path = 'user/{}'.format(filename)
         return path
 
-    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True)
+    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
 
     def __str__(self):
         return f"{self.id}) {self.nickname}({self.user.username})"
@@ -42,6 +45,7 @@ class Product(models.Model):
     price = models.IntegerField()
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
     place_option = models.BooleanField(default=True)
+    hits = models.IntegerField(default=0)
     # deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
     user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
@@ -51,7 +55,7 @@ class Product(models.Model):
         path = 'photo/{}'.format(filename)
         return path
 
-    photo = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
         if self.category:
@@ -103,6 +107,12 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
 
+    def upload_review(self, filename):
+        path = 'review/{}'.format(filename)
+        return path
+
+    photo = models.ImageField(upload_to=upload_review, null=True, blank=True)
+
 
 class Favorite(models.Model):
     DEFAULT_PK=1
@@ -113,3 +123,22 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.nickname}의 찜 목록"
+
+class Notice(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
+    
+    def upload_banner(self, filename):
+        path = 'notice/banner/{}'.format(filename)
+        return path
+
+    def upload_contentphoto(self, filename):
+        path = 'notice/content/{}'.format(filename)
+        return path
+
+    def __str__(self):
+        return f"{self.id}) {self.title}"
+    banner_photo = models.ImageField(upload_to=upload_banner)
+    content_photo = models.ImageField(upload_to=upload_contentphoto, null=True, blank=True)
