@@ -134,7 +134,7 @@ class Notice(models.Model):
         return path
 
     def upload_contentphoto(self, filename):
-        path = 'notice/photo/{}'.format(filename)
+        path = 'notice/content/{}'.format(filename)
         return path
 
     def __str__(self):

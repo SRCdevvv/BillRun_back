@@ -238,13 +238,13 @@ class ReviewDetail(APIView):
 
     def get(self, request, product_id):
         if not self.get_review(product_id):
-            return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = ReviewSerializer(self.get_review(product_id), many=True)
         return Response(serializer.data)
 
     def put(self, request, product_id):
         if not self.get_review(product_id):
-            return Response(f'Review with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = ReviewSerializer(self.get_review(product_id), data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
@@ -252,7 +252,41 @@ class ReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
+class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
+    def get(self, request): 
+        model = Favorite.objects.all()
+        serializer = FavoriteSerializer(model, many=True)
+        return Response(serializer.data)
 
+    def post(self, request):
+        serializer = FavoriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FavoriteDetail(APIView):
+    def get_favorite(self, user_id):#특정 유저에 대한 좋아요 가져오기
+        try:
+            model = Favorite.objects.filter(user_id=user_id)
+            return model
+        except Review.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_favorite(user_id):
+            return Response(f'Favorite with User id {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = FavoriteSerializer(self.get_favorite(user_id), many=True)
+        return Response(serializer.data)
+
+    def put(self, request, user_id):
+        if not self.get_favorite(user_id):
+            return Response(f'Favorite with User id {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = FavoriteSerializer(self.get_favorite(user_id), data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Notice
 class NoticeList(APIView):
