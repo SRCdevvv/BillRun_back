@@ -122,3 +122,22 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.nickname}의 찜 목록"
+
+class Notice(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
+    
+    def upload_banner(self, filename):
+        path = 'notice/banner/{}'.format(filename)
+        return path
+
+    def upload_contentphoto(self, filename):
+        path = 'notice/photo/{}'.format(filename)
+        return path
+
+    def __str__(self):
+        return f"{self.id}) {self.title}"
+    banner_photo = models.ImageField(upload_to=upload_banner)
+    content_photo = models.ImageField(upload_to=upload_contentphoto, null=True, blank=True)

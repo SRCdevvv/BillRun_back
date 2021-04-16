@@ -37,5 +37,9 @@ urlpatterns = [
     path('review/', ReviewList.as_view(), name="review_list"),
     path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"),
 
+    #내 찜 목록
 
+    #배너(공지사항, 이벤트)
+    path('notice/', NoticeList.as_view(), name="notice"),
+    path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
 ] 

@@ -11,7 +11,7 @@ def main(request):
     return render(request, 'api/main.html')
 
 #### User
-class UserList(APIView): #전체 유저 리스트(정확하지 않음)
+class UserList(APIView): #전체 유저 리스트
     def get(self, request):
         model = User.objects.all()
         # serializer = UserSerializer(model, many=True)
@@ -252,3 +252,48 @@ class ReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
+
+
+#### Notice
+class NoticeList(APIView):
+    def get(self, request): 
+        model = Notice.objects.all()
+        serializer = NoticeSerializer(model, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = NoticeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NoticeDetail(APIView): #이벤트 상세보기
+    def get_notice(self, notice_id):
+        try:
+            model = Notice.objects.get(id=notice_id)
+            return model
+        except Notice.DoesNotExist:
+            return
+
+    def get(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = NoticeSerializer(self.get_notice(notice_id), context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = NoticeSerializer(self.get_notice(notice_id), context={'request': request}, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+    def delete(self, request, notice_id):
+        if not self.get_notice(notice_id):
+            return Response(f'Notice with {notice_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        model = self.get_notice(notice_id)
+        model.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
