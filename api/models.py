@@ -3,11 +3,14 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.utils import timezone
 
+profile_default = 'user/default_user.png'
+photo_default = 'photo/no_image.png'
+
 # Create your models here.
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, default='', unique=True)
-    money = models.IntegerField(default=None)
+    money = models.IntegerField(default=0)
     level = models.CharField(max_length=10, default='', null=True, blank=True)
     place = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
@@ -17,7 +20,7 @@ class User(models.Model):
         path = 'user/{}'.format(filename)
         return path
 
-    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True)
+    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
 
     def __str__(self):
         return f"{self.id}) {self.nickname}({self.user.username})"
@@ -51,7 +54,7 @@ class Product(models.Model):
         path = 'photo/{}'.format(filename)
         return path
 
-    photo = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
         if self.category:
