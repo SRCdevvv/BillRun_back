@@ -124,14 +124,18 @@ class ProductDetail(APIView): #상품 상세보기
     def get_product(self, product_id):
         try:
             model = Product.objects.get(id=product_id)
+            model.hits += 1
+            model.save()
             return model
         except Product.DoesNotExist:
             return
 
     def get(self, request, product_id):
-        if not self.get_product(product_id):
+        p = self.get_product(product_id)
+        # if not self.get_product(product_id):
+        if not p:
             return Response(f'Product with {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ProductSerializer(self.get_product(product_id), context={'request': request})
+        serializer = ProductSerializer(p, context={'request': request})
         return Response(serializer.data)
 
         #상품에 대한 리뷰 불러오기 추가!!!!!!!!!!!

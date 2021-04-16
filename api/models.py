@@ -45,6 +45,7 @@ class Product(models.Model):
     price = models.IntegerField()
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
     place_option = models.BooleanField(default=True)
+    hits = models.IntegerField(default=0)
     # deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
     user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
