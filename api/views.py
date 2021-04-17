@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -256,6 +256,23 @@ class ReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
+def product_like_toggle(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    # user = request.user
+    # profile = Profile.objects.get(user=user)
+    # check_like_product = profile.like_products.filter(id=product_id)
+
+    # if check_like_post.exists():
+    #     profile.like_posts.remove(post)
+    #     product.like_count -= 1
+    #     post.save()
+    # else:
+    #     profile.like_posts.add(post)
+    product.like_count += 1
+    product.save()
+
+    return redirect('api:product_detail', product_id)
+
 class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
     def get(self, request): 
         model = Favorite.objects.all()
