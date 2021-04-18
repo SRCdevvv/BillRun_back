@@ -23,6 +23,8 @@ urlpatterns = [
     path('', main, name="main"),
     path('admin/', admin.site.urls, name="admin"),
     path('api/', include('api.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/rest-auth/', include('rest_auth.urls')),
     # url(r'^api/users_list/$', UserList.as_view(), name="user_list"),
     # path('api/user_list/', UserList.as_view(), name="user_list"),
     # path('api/user_list/<int:id>', UserList.as_view(), name="user_list"),

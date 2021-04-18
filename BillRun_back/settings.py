@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'api',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
+
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -131,13 +133,13 @@ MEDIA_URL = '/media/'
 #미디어 파일의 경로 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated', #조건이 맞는지 확인
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.BasicAuthentication', #username, pw
-#         'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
-#         'rest_framework.authentication.TokenAuthentication', #파이썬 라이브러리에서 중요!
-#     )
-# } 
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated', #조건이 맞는지 확인
+    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.BasicAuthentication', #username, pw
+        'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
+        'rest_framework.authentication.TokenAuthentication', #파이썬 라이브러리에서 중요!
+    )
+} 
