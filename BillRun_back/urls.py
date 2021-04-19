@@ -18,14 +18,21 @@ from django.urls import path, include
 from api.views import *
 from django.conf.urls import url, static
 from django.conf import settings
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
 urlpatterns = [
     path('', main, name="main"),
     path('admin/', admin.site.urls, name="admin"),
     path('api/', include('api.urls')),
+
+    #Auth
     path('api-auth/', include('rest_framework.urls')),
-    path('api/rest-auth/', include('rest_auth.urls')),
-    # url(r'^api/users_list/$', UserList.as_view(), name="user_list"),
-    # path('api/user_list/', UserList.as_view(), name="user_list"),
-    # path('api/user_list/<int:id>', UserList.as_view(), name="user_list"),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('rest-auth/signup/', include('rest_auth.registration.urls')),
+
+    #jwt
+    path('token/', obtain_jwt_token), #획득
+    path('token/verify/', verify_jwt_token), #확인
+    path('token/refresh/', refresh_jwt_token), #갱신
+
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
