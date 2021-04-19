@@ -270,8 +270,9 @@ def product_like_toggle(request, product_id):
     #     profile.like_posts.add(post)
     product.like_count += 1
     product.save()
+    # return product
 
-    return redirect('api:product_detail', product_id)
+    return redirect('api:product_detail', product_id) #끝맺음을 어떻게 해야 할 지 모르겠구먼
 
 class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
     def get(self, request): 
