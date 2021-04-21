@@ -5,10 +5,106 @@ from rest_framework import status
 from .serializers import *
 from .models import *
 import datetime
+import json
+
+SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
+ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
+SECRET_KEY = '2d99e064782c4640b5816ee9d762e792' #SMS 시크릿키
+# SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx'
 
 # main page
 def main(request):
     return render(request, 'api/main.html')
+
+### Auth
+# def	make_signature():
+# 	timestamp = int(time.time() * 1000)
+# 	timestamp = str(timestamp)
+
+# 	access_key = ACCESS_KEY			# access key id (from portal or Sub Account)
+# 	secret_key = SECRET_KEY				# secret key (from portal or Sub Account)
+# 	secret_key = bytes(secret_key, 'UTF-8')
+
+# 	method = "GET"
+# 	uri = "/sms/v2/services/{SERVICE_ID}/messages"
+
+# 	message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+# 	message = bytes(message, 'UTF-8')
+# 	signingKey = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+# 	return signingKey
+
+class Auth_sms(APIView):
+    # def post(self, request):
+    #     try:
+    #         p_num = request.data['phone_number']
+    #     except KeyError:
+    #         return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         AuthSms.objects.create(phone_number=p_num)
+    #         return Response({'message': 'OK'})
+    
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            AuthSms.objects.update_or_create(phone_number=data['phone_number'])
+            # sms = AuthSms.objects.get(phone_number=data['phone_number'])
+            # AuthSms.send_sms(sms)
+            # AuthSms.test(sms)
+            return Response({'message': 'OK', 'status': Response.status_code})
+        except KeyError:
+            return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    # def get(self, request):
+    #     try:
+    #         phone_number = request.query_params['phone_number']
+    #         auth_number = request.query_params['auth_number']
+    #         result = AuthSmsRequest.check_auth_number(phone_number, auth_number)
+    #         return Response({'message': 'OK', 'result':result})
+    #     except KeyError:
+    #         return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    
+    # def save(self, *args, **kwargs):
+    #     self.auth_number = randint(1000, 10000)
+    #     super().save(*args, **kwargs)
+    #     self.send_sms() # 인증번호가 담긴 SMS를 전송
+
+    # def send_sms(self):
+    #     url = 'https://sens.apigw.ntruss.com/sms/v2/services/{SERVICE_ID}/messages'
+    #     data = {
+    #         "type": "SMS",
+    #         "from": "01066278667",
+    #         "to": [self.phone_number],
+    #         "content": "[테스트] 인증 번호 [{}]를 입력해주세요.".format(self.auth_number)
+    #     }
+    #     headers = {
+    #         "Content-Type": "application/json",
+    #         "x-ncp-auth-key": ACCESS_KEY,
+    #         "x-ncp-service-secret": SECRET_KEY,
+    #     }
+    #     requests.post(url, json=data, headers=headers)
+
+    # #실제 문자를 보내주는 메서드
+    # def send_sms(self, phone_number, auth_number):
+    #     headers = {
+    #         'Content-Type': 'application/json; charset=utf-8',
+    #         # 'x-ncp-apigw-timestamp': timestamp
+    #         'x-ncp-iam-access-key': ACCESS_KEY,
+    #         'x-ncp-apigw-signature-v2': make_signature()
+    #     }
+    #     data = {
+    #         "type":"SMS",
+    #         "contentType":"COMM",
+    #         "countryCode":"82",
+    #         "from":"01066278667",
+    #         "to":phone_number,
+    #         "subject":"string",
+    #         "content":"[테스트] 인증 번호 [{}]를 입력해주세요.".format(auth_number),
+    #     }
+        
+    #     requests.post(SMS_URL, headers=headers, json=data)
 
 #### User
 class UserList(APIView): #전체 유저 리스트

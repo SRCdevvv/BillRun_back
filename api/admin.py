@@ -8,3 +8,5 @@ admin.site.register(Review)
 admin.site.register(Deal)
 admin.site.register(Favorite)
 admin.site.register(Notice)
+
+admin.site.register(AuthSms)
