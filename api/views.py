@@ -33,16 +33,7 @@ def main(request):
 # 	signingKey = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
 # 	return signingKey
 
-class Auth_sms(APIView):
-    # def post(self, request):
-    #     try:
-    #         p_num = request.data['phone_number']
-    #     except KeyError:
-    #         return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
-    #     else:
-    #         AuthSms.objects.create(phone_number=p_num)
-    #         return Response({'message': 'OK'})
-    
+class SMSVerification(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -54,57 +45,26 @@ class Auth_sms(APIView):
         except KeyError:
             return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
-    
-    # def get(self, request):
-    #     try:
-    #         phone_number = request.query_params['phone_number']
-    #         auth_number = request.query_params['auth_number']
-    #         result = AuthSmsRequest.check_auth_number(phone_number, auth_number)
-    #         return Response({'message': 'OK', 'result':result})
-    #     except KeyError:
-    #         return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-    
-    # def save(self, *args, **kwargs):
-    #     self.auth_number = randint(1000, 10000)
-    #     super().save(*args, **kwargs)
-    #     self.send_sms() # 인증번호가 담긴 SMS를 전송
+class SMSConfirm(APIView):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            phone = data['phone_number']
+            verification_number = data['auth_number']
+            if verification_number == AuthSms.objects.get(phone_number=phone).auth_number:
+                if not User.objects.filter(phone=phone).exists():
+                    # User.objects.create(phone=phone)
+                    # 여기서 유저를 만들어야하는데 유저부터 수정하자!
+                    return Response({'message': 'SUCCESS'}, status=200)
+                else:
+                    return Response({'message': 'REGISTERED_NUMBER'}, status=401)
+            return Response({'message': 'INVALID_NUMBER'}, status=401)
+        except KeyError as e:
+            return Response({'message': f'KEY_ERROR: {e}'}, status=400)
 
-    # def send_sms(self):
-    #     url = 'https://sens.apigw.ntruss.com/sms/v2/services/{SERVICE_ID}/messages'
-    #     data = {
-    #         "type": "SMS",
-    #         "from": "01066278667",
-    #         "to": [self.phone_number],
-    #         "content": "[테스트] 인증 번호 [{}]를 입력해주세요.".format(self.auth_number)
-    #     }
-    #     headers = {
-    #         "Content-Type": "application/json",
-    #         "x-ncp-auth-key": ACCESS_KEY,
-    #         "x-ncp-service-secret": SECRET_KEY,
-    #     }
-    #     requests.post(url, json=data, headers=headers)
+        except ValueError as e:
+            return Response({'message': f'VALUE_ERROR: {e}'}, status=400)
 
-    # #실제 문자를 보내주는 메서드
-    # def send_sms(self, phone_number, auth_number):
-    #     headers = {
-    #         'Content-Type': 'application/json; charset=utf-8',
-    #         # 'x-ncp-apigw-timestamp': timestamp
-    #         'x-ncp-iam-access-key': ACCESS_KEY,
-    #         'x-ncp-apigw-signature-v2': make_signature()
-    #     }
-    #     data = {
-    #         "type":"SMS",
-    #         "contentType":"COMM",
-    #         "countryCode":"82",
-    #         "from":"01066278667",
-    #         "to":phone_number,
-    #         "subject":"string",
-    #         "content":"[테스트] 인증 번호 [{}]를 입력해주세요.".format(auth_number),
-    #     }
-        
-    #     requests.post(SMS_URL, headers=headers, json=data)
 
 #### User
 class UserList(APIView): #전체 유저 리스트

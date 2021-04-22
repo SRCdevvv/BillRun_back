@@ -49,5 +49,6 @@ urlpatterns = [
     path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
 
     #api시험
-    path('sms', Auth_sms.as_view(), name="sms"),
+    path('sms', SMSVerification.as_view(), name="sms"),
+    path('sms_confirm', SMSConfirm.as_view(), name="sms_confirm"),
 ] 
