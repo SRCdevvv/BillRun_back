@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.utils import timezone
 from random import randint
+from .keys import *
 
 import sys
 import os
@@ -17,10 +18,6 @@ import urllib.request
 
 profile_default = 'user/default_user.png'
 photo_default = 'photo/no_image.png'
-
-SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
-ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
-SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx' #계정 시크릿키
 
 # Auth
 class AuthSms(models.Model):
@@ -58,7 +55,7 @@ class AuthSms(models.Model):
         }
         body = {
             'type': 'SMS',
-            'from': '01066278667',
+            'from': PHONE,
             'content': '인증 번호 [{}]를 입력해주세요.'.format(self.auth_number),
             'messages':[{
                     'to':self.phone_number
