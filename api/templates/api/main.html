@@ -24,7 +24,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">사용자 리스트</h5>
                         </div>
-                        <p class="mb-1">api/user_list</p>
+                        <p class="mb-1">/api/user_list</p>
                         <small>뒤에 User id 붙이면(/id) 해당 User의 정보가 나옵니다.</small>
                     </a>
                 </div>
@@ -33,7 +33,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">사용자 좋아요 리스트</h5>
                         </div>
-                        <p class="mb-1">api/favorite/int:user_id</p>
+                        <p class="mb-1">/api/favorite/int:user_id</p>
                         <small>뒤에 User id 붙이면(/id) 해당 User의 좋아요 목록이 나옵니다.</small>
                     </a>
                 </div>
@@ -44,7 +44,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">빌려드림 리스트</h5>
                         </div>
-                        <p class="mb-1">api/lend_product_list</p>
+                        <p class="mb-1">/api/lend_product_list</p>
                         <small>뒤에 Product id 붙이면(/id) 해당 상품의 정보가 나옵니다.</small>
                     </a>
                 </div>
@@ -53,7 +53,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">빌림 리스트</h5>
                         </div>
-                        <p class="mb-1">api/rent_product_list</p>
+                        <p class="mb-1">/api/rent_product_list</p>
                         <small>뒤에 Product id 붙이면(/id) 해당 상품의 정보가 나옵니다.</small>
                     </a>
                 </div>
@@ -64,7 +64,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">거래 리스트</h5>
                         </div>
-                        <p class="mb-1">api/deal_list</p>
+                        <p class="mb-1">/api/deal_list</p>
                         <small>뒤에 Deal id 붙이면(/id) 해당 Deal의 정보가 나옵니다.</small>
                     </a>
                 </div>
@@ -73,7 +73,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">리뷰 리스트</h5>
                         </div>
-                        <p class="mb-1">api/review</p>
+                        <p class="mb-1">/api/review</p>
                         <small>뒤에 상품번호의 id를 붙이면(/id) 해당 상품의 리뷰들이 나옵니다.</small>
                     </a>
                 </div>
@@ -84,7 +84,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">공지 리스트</h5>
                         </div>
-                        <p class="mb-1">api/notice</p>
+                        <p class="mb-1">/api/notice</p>
                         <small>뒤에 공지게시글의 id를 붙이면(/id) 해당 공지 게시글의 내용이 나옵니다.</small>
                     </a>
                 </div>
@@ -93,8 +93,29 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">Admin</h5>
                         </div>
-                        <p class="mb-1">admin</p>
+                        <p class="mb-1">/admin</p>
                         <small>관리 페이지입니다! 아이디랑 비밀번호는 아시져? 😈</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:sms' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">SMS 전송</h5>
+                        </div>
+                        <p class="mb-1">/sms</p>
+                        <small>{"phone_number":"01012345678"} 입력 후 POST 방식으로 보내면 해당 번호로 인증 문자가 전송됩니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:sms_confirm' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">SMS 인증번호 확인 (제작중)</h5>
+                        </div>
+                        <p class="mb-1">/sms_confirm</p>
+                        <small>{"phone_number":"01012345678", "auth_number":7695} 입력 후 POST 방식으로 보내면 인증번호가 맞을 경우 회원가입이 됩니다.
+                        User 테이블 재생성 후 추가 개발 예정입니다~!</small>
                     </a>
                 </div>
             </div>
