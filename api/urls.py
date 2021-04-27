@@ -37,6 +37,9 @@ urlpatterns = [
     path('review/', ReviewList.as_view(), name="review_list"),
     path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"),
 
+    #좋아요 누르기
+    path('product_like_toggle/<int:product_id>', product_like_toggle, name="like_toggle"),
+
     #찜 목록
     path('favorite/', FavoriteList.as_view(), name="favorite_list"),
     path('favorite/<int:user_id>', FavoriteDetail.as_view(), name="favorite_detail"),
@@ -44,4 +47,8 @@ urlpatterns = [
     #배너(공지사항, 이벤트)
     path('notice/', NoticeList.as_view(), name="notice"),
     path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
+
+    #api시험
+    path('sms', SMSVerification.as_view(), name="sms"),
+    path('sms_confirm', SMSConfirm.as_view(), name="sms_confirm"),
 ] 

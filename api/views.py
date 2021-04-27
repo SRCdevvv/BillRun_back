@@ -1,14 +1,70 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from .models import *
 import datetime
+import json
+
+SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
+ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
+SECRET_KEY = '2d99e064782c4640b5816ee9d762e792' #SMS 시크릿키
+# SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx'
 
 # main page
 def main(request):
     return render(request, 'api/main.html')
+
+### Auth
+# def	make_signature():
+# 	timestamp = int(time.time() * 1000)
+# 	timestamp = str(timestamp)
+
+# 	access_key = ACCESS_KEY			# access key id (from portal or Sub Account)
+# 	secret_key = SECRET_KEY				# secret key (from portal or Sub Account)
+# 	secret_key = bytes(secret_key, 'UTF-8')
+
+# 	method = "GET"
+# 	uri = "/sms/v2/services/{SERVICE_ID}/messages"
+
+# 	message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+# 	message = bytes(message, 'UTF-8')
+# 	signingKey = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+# 	return signingKey
+
+class SMSVerification(APIView):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            AuthSms.objects.update_or_create(phone_number=data['phone_number'])
+            # sms = AuthSms.objects.get(phone_number=data['phone_number'])
+            # AuthSms.send_sms(sms)
+            # AuthSms.test(sms)
+            return Response({'message': 'OK', 'status': Response.status_code})
+        except KeyError:
+            return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+class SMSConfirm(APIView):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            phone = data['phone_number']
+            verification_number = data['auth_number']
+            if verification_number == AuthSms.objects.get(phone_number=phone).auth_number:
+                if not User.objects.filter(phone=phone).exists():
+                    # User.objects.create(phone=phone)
+                    # 여기서 유저를 만들어야하는데 유저부터 수정하자!
+                    return Response({'message': 'SUCCESS'}, status=200)
+                else:
+                    return Response({'message': 'REGISTERED_NUMBER'}, status=401)
+            return Response({'message': 'INVALID_NUMBER'}, status=401)
+        except KeyError as e:
+            return Response({'message': f'KEY_ERROR: {e}'}, status=400)
+
+        except ValueError as e:
+            return Response({'message': f'VALUE_ERROR: {e}'}, status=400)
+
 
 #### User
 class UserList(APIView): #전체 유저 리스트
@@ -256,6 +312,23 @@ class ReviewDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
+def product_like_toggle(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    # user = request.user
+    # profile = Profile.objects.get(user=user)
+    # check_like_product = profile.like_products.filter(id=product_id)
+
+    # if check_like_post.exists():
+    #     profile.like_posts.remove(post)
+    #     product.like_count -= 1
+    #     post.save()
+    # else:
+    #     profile.like_posts.add(post)
+    product.like_count += 1
+    product.save()
+
+    return redirect('api:product_detail', product_id) #끝맺음을 어떻게 해야 할 지 모르겠구먼
+
 class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
     def get(self, request): 
         model = Favorite.objects.all()
