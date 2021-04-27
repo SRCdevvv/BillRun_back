@@ -47,4 +47,8 @@ urlpatterns = [
     #배너(공지사항, 이벤트)
     path('notice/', NoticeList.as_view(), name="notice"),
     path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
+
+    #api시험
+    path('sms', SMSVerification.as_view(), name="sms"),
+    path('sms_confirm', SMSConfirm.as_view(), name="sms_confirm"),
 ] 

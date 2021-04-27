@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,10 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
-    'api',
+    #drf
     'rest_framework',
     'rest_framework.authtoken',
+
+    #rest_auth+allauth
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+
+    #apps
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -120,6 +131,7 @@ USE_L10N = True
 
 USE_TZ = False
 
+SITE_ID = 1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -131,13 +143,25 @@ MEDIA_URL = '/media/'
 #미디어 파일의 경로 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated', #조건이 맞는지 확인
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework.authentication.BasicAuthentication', #username, pw
-#         'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
-#         'rest_framework.authentication.TokenAuthentication', #파이썬 라이브러리에서 중요!
-#     )
-# } 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated', #인증된 사용자만 접근 가능
+        # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근 가능
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.BasicAuthentication', #username, pw
+        # 'rest_framework.authentication.TokenAuthentication', #토큰 방식으로 로그인
+        # 'rest_framework.authentication.SessionAuthentication', #다른 탭에서 로그인시 똑같이 작용
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    )
+} 
+
+## JWT
+# 추가적인 JWT_AUTH 설정
+JWT_AUTH = {
+    'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_ALGORITHM': 'HS256', # 암호화 알고리즘
+    'JWT_ALLOW_REFRESH': True, # refresh 사용 여부
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7), # 유효기간 설정
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28), # JWT 토큰 갱신 유효기간
+}
