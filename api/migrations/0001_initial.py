@@ -26,7 +26,6 @@ class Migration(migrations.Migration):
                 ('price', models.IntegerField()),
                 ('price_prop', models.CharField(choices=[('Day', 'Per Day'), ('30m', 'Per half hour'), ('1h', 'Per hour')], max_length=10)),
                 ('place_option', models.BooleanField(default=True)),
-                ('photo', models.ImageField(blank=True, null=True, upload_to=api.models.Product.upload_photo)),
             ],
         ),
         migrations.CreateModel(

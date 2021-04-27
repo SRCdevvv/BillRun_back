@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='product',
-            name='photo',
-            field=models.ImageField(blank=True, default='media/photo/no_image.png', null=True, upload_to=api.models.Product.upload_photo),
-        ),
-        migrations.AlterField(
             model_name='user',
             name='profile',
             field=models.ImageField(blank=True, default='media/user/default_user.png', null=True, upload_to=api.models.User.upload_profile),

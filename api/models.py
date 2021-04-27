@@ -88,29 +88,57 @@ class User(models.Model):
 class Product(models.Model):
     DEFAULT_PK=1
     PRICEPROP = (
-        ('Day', 'Per Day'),
-        ('30m', 'Per half hour'),
-        ('1h', 'Per hour'),
+        ('Day', '일 당'),
+        ('30m', '30분 당'),
+        ('1h', '시간 당'),
+    )
+    GROUP = (
+        ('Woman', '여성의류/잡화'),
+        ('Man', '남성의류/잡화'),
+        ('Digital', '디지털/가전'),
+        ('MajorBook', '전공도서'),
+        ('MajorEtc', '전공기타'),
+        ('Game', '게임'),
+        ('Sports', '스포츠'),
+        ('Household', '생활잡화'),
+        ('Etc', '기타'),
     )
     # DEALOP = (
     #     ('F2F', 'Face to Face'),
     #     ('Untact', 'Untact'),
     # )
-
-    category = models.BooleanField(default=True) 
+    
+    borrow = models.BooleanField(default=True)
+    category = models.CharField(max_length=10, choices=GROUP)
     name = models.CharField(max_length=50)
     description = models.TextField()
     caution = models.TextField()
     price = models.IntegerField()
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
-    place_option = models.BooleanField(default=True)
+    place_option = models.BooleanField(default=True) #안심거래옵션
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     # deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
-    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
+    # def upload_photo(self, filename):
+    #     path = 'photo/{}'.format(filename)
+    #     return path
+
+    # photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
+
+    def __str__(self):
+        if self.borrow:
+            return f"{self.id}) [빌려드림]{self.name} - {self.user.nickname}"
+        else:
+            return f"{self.id}) [빌림]{self.name} - {self.user.nickname}"
+
+
+class ProductPhoto(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    
     def upload_photo(self, filename):
         path = 'photo/{}'.format(filename)
         return path
@@ -118,10 +146,8 @@ class Product(models.Model):
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
-        if self.category:
-            return f"{self.id}) [빌려드림]{self.name} - {self.user_id.nickname}"
-        else:
-            return f"{self.id}) [빌림]{self.name} - {self.user_id.nickname}"
+        return f"{self.product}"
+    
 
 
 class Deal(models.Model):
@@ -143,14 +169,14 @@ class Deal(models.Model):
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
     period = models.IntegerField()
     # deal_option = models.CharField(max_length=10, default="", choices=DEALOP)
-    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
-        if self.product_id.category:
-            return f"{self.id}) [빌려드림]{self.product_id.name} ({self.product_id.user_id.nickname} >> {self.user_id.nickname})"
+        if self.product.borrow:
+            return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
         else:
-            return f"{self.id}) [빌림]{self.product_id.name} ({self.product_id.user_id.nickname} >> {self.user_id.nickname})"
+            return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
 
 
 class Review(models.Model):
@@ -158,14 +184,14 @@ class Review(models.Model):
     post = models.TextField()
     product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    deal_id = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def __str__(self):
-        return f"{self.deal_id.id}) {self.product_id.name} - {self.user_id.nickname}"
+        return f"{self.deal.id}) {self.product.name} - {self.user.nickname}"
 
     def upload_review(self, filename):
         path = 'review/{}'.format(filename)

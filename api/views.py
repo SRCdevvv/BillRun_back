@@ -7,11 +7,6 @@ from .models import *
 import datetime
 import json
 
-SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
-ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
-SECRET_KEY = '2d99e064782c4640b5816ee9d762e792' #SMS 시크릿키
-# SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx'
-
 # main page
 def main(request):
     return render(request, 'api/main.html')
@@ -96,11 +91,11 @@ class UserDetail(APIView): #마이페이지
             value = 0
             ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
             #빌려드림에서 내가 올린 상품의 금액
-            for x in Product.objects.filter(user_id_id=model.id, category=True, deal__deal_prop='COM'):
+            for x in Product.objects.filter(user_id=model.id, borrow=True, deal__deal_prop='COM'):
                 # period = 
                 value += x.price
             #빌림에서 내가 빌려준 상품의 금액
-            for y in Product.objects.filter(deal__user_id=model.id, category=False, deal__deal_prop='COM'):
+            for y in Product.objects.filter(deal__user_id=model.id, borrow=False, deal__deal_prop='COM'):
                 value += y.price
 
             model.money = value #내가 번 돈 저장
@@ -153,13 +148,13 @@ class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 
 #### Product
 class LendProductList(APIView): #빌려주는 상품 목록
     def get(self, request):
-        model = Product.objects.filter(category=True)
+        model = Product.objects.filter(borrow=True)
         serializer = ProductSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
 class RentProductList(APIView): #빌리는 상품 목록
     def get(self, request):
-        model = Product.objects.filter(category=False)
+        model = Product.objects.filter(borrow=False)
         serializer = ProductSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
@@ -291,7 +286,7 @@ class ReviewDetail(APIView):
             # product = Product.objects.get(id=product_id)
             # model = Review.objects.filter(deal_id_product_id_id=product_id)
             
-            model = Review.objects.filter(product_id_id=product_id)
+            model = Review.objects.filter(product_id=product_id)
             return model
         except Review.DoesNotExist:
             return

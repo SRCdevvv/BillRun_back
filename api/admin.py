@@ -4,6 +4,7 @@ from api.models import *
 # Register your models here.
 admin.site.register(User)
 admin.site.register(Product)
+admin.site.register(ProductPhoto)
 admin.site.register(Review)
 admin.site.register(Deal)
 admin.site.register(Favorite)
