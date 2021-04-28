@@ -104,18 +104,18 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">SMS 전송</h5>
                         </div>
-                        <p class="mb-1">/sms</p>
+                        <p class="mb-1">/api/sms</p>
                         <small>{"phone_number":"01012345678"} 입력 후 POST 방식으로 보내면 해당 번호로 인증 문자가 전송됩니다.</small>
                     </a>
                 </div>
                 <div class="col-sm-6">
                     <a href="{% url 'api:sms_confirm' %}" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">SMS 인증번호 확인 (제작중)</h5>
+                            <h5 class="mb-1">SMS 인증번호 확인(User DB 구축 후 추가개발 예정)</h5>
                         </div>
-                        <p class="mb-1">/sms_confirm</p>
+                        <p class="mb-1">/api/sms_confirm</p>
                         <small>{"phone_number":"01012345678", "auth_number":7695} 입력 후 POST 방식으로 보내면 인증번호가 맞을 경우 회원가입이 됩니다.
-                        User 테이블 재생성 후 추가 개발 예정입니다~!</small>
+                        </small>
                     </a>
                 </div>
             </div>
