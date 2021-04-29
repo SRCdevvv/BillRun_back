@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -91,11 +92,11 @@ class UserDetail(APIView): #마이페이지
             value = 0
             ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
             #빌려드림에서 내가 올린 상품의 금액
-            for x in Product.objects.filter(user_id=model.id, borrow=True, deal__deal_prop='COM'):
+            for x in Product.objects.filter(user=model.id, borrow=True, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
                 # period = 
                 value += x.price
             #빌림에서 내가 빌려준 상품의 금액
-            for y in Product.objects.filter(deal__user_id=model.id, borrow=False, deal__deal_prop='COM'):
+            for y in Product.objects.filter(deal__user=model.id, borrow=False, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
                 value += y.price
 
             model.money = value #내가 번 돈 저장
@@ -224,29 +225,60 @@ class DealList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-class DealDetail(APIView): #거래 수정(완료로)
+class DealDetail(APIView): #거래 상세보기
     def get_deal(self, deal_id):
-        try:
-            model = Deal.objects.get(id=deal_id)
-            return model
-        except Deal.DoesNotExist:
-            return
+            try:
+                model = Deal.objects.get(id=deal_id)
+                return model
+            except Deal.DoesNotExist:
+                return
 
     def get(self, request, deal_id):
         if not self.get_deal(deal_id):
-            return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Deal with ID {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = DealSerializer(self.get_deal(deal_id), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, deal_id):
         if not self.get_deal(deal_id):
-            return Response(f'Deal with {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+            return Response(f'Deal with User ID {deal_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = DealSerializer(self.get_deal(deal_id), context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
 
+class BorrowDealList(APIView): 
+    def get_deal(self, user_id):
+        try:
+            # model = Deal.objects.get(id=user_id)
+            model = Deal.objects.filter(Q(user=user_id, product__borrow=False) | Q(product__user=user_id, product__borrow=True))
+            return model
+        except Deal.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_deal(user_id):
+            return Response(f'Deal with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = DealSerializer(self.get_deal(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
+
+class LendDealList(APIView):
+    def get_deal(self, user_id):
+        try:
+            # model = Deal.objects.get(id=user_id)
+            model = Deal.objects.filter(Q(user=user_id, product__borrow=True) | Q(product__user=user_id, product__borrow=False))
+            return model
+        except Deal.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_deal(user_id):
+            return Response(f'Deal with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = DealSerializer(self.get_deal(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
 
 
 #### Review
