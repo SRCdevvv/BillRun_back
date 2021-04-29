@@ -31,7 +31,7 @@ urlpatterns = [
 
     #거래 진행
     path('deal_list/', DealList.as_view(), name="deal_list"),
-    path('deal_list/<int:deal_id>', DealDetail.as_view(), name="deal_datail"),
+    path('deal_list/<int:user_id>', DealDetail.as_view(), name="deal_datail"),
 
     #리뷰
     path('review/', ReviewList.as_view(), name="review_list"),

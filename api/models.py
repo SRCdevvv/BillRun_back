@@ -153,7 +153,7 @@ class ProductPhoto(models.Model):
 class Deal(models.Model):
     DEFAULT_PK=1
     DEALPROP = (
-        ('Not', 'Not Yet'),
+        ('NOT', 'Not Yet'),
         ('PRO', 'In Progress'),
         ('COM', 'Complete'),
     )
@@ -161,7 +161,7 @@ class Deal(models.Model):
     #     ('F2F', 'Face to Face'),
     #     ('Untact', 'Untact'),
     # )
-    deal_prop = models.CharField(max_length=10, choices=DEALPROP)
+    deal_prop = models.CharField(max_length=10, default=1, choices=DEALPROP)
     contract = models.BooleanField(default=False)
     contract2 = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
