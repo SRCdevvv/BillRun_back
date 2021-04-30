@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from random import randint
 from .keys import *
+# from urllib.parse import unquote
 
 import sys
 import os
@@ -77,6 +78,7 @@ class User(models.Model):
     
     def upload_profile(self, filename):
         path = 'user/{}'.format(filename)
+        # unquote(path)
         return path
 
     profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
@@ -141,6 +143,7 @@ class ProductPhoto(models.Model):
     
     def upload_photo(self, filename):
         path = 'photo/{}'.format(filename)
+        # unquote(path)
         return path
 
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
