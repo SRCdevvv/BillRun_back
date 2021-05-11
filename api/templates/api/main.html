@@ -13,7 +13,7 @@
     <title>BillRun</title>
   </head>
   <body>
-    <div class="container"> 
+    <div class="container" style="margin-bottom:50px"> 
         <br>
         <h1 Align="center">😈 빌Run API 😈</h1>
         <br>
@@ -33,7 +33,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">사용자 좋아요 리스트</h5>
                         </div>
-                        <p class="mb-1">/api/favorite/int:user_id</p>
+                        <p class="mb-1">/api/favorite/(int:user_id)</p>
                         <small>뒤에 User id 붙이면(/id) 해당 User의 좋아요 목록이 나옵니다.</small>
                     </a>
                 </div>
@@ -55,6 +55,46 @@
                         </div>
                         <p class="mb-1">/api/rent_product_list</p>
                         <small>뒤에 Product id 붙이면(/id) 해당 상품의 정보가 나옵니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_lend_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌려드림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_rent_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:lend_deal_list' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌려드림 거래 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_deal_list/(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:rent_deal_list' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌림 거래 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/rent_deal_list/(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
                     </a>
                 </div>
             </div>
@@ -120,6 +160,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Optional JavaScript; choose one of the two! -->
 
