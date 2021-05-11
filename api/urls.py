@@ -12,6 +12,7 @@ urlpatterns = [
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
     path('lend_product_list/<int:product_id>', ProductDetail.as_view(), name="lend_product_detail"),
+    path('lend_product_list/user_id=<int:user_id>', UserLendProductList.as_view(), name="user_lend_product"),
     
     #빌려드림 상품에 대한 리뷰 작성
     # path('lend_product_list/<int:product_id>/new_review', ReviewDetail.as_view(), name="new_review_lend"),
@@ -19,6 +20,7 @@ urlpatterns = [
     #빌림
     path('rent_product_list/', RentProductList.as_view(), name="rent_product_list"),
     path('rent_product_list/<int:product_id>', ProductDetail.as_view(), name="rent_product_detail"),
+    path('rent_product_list/user_id=<int:user_id>', UserRentProductList.as_view(), name="user_rent_product"),
     
     #빌림 상품에 대한 리뷰 작성
     # path('rent_product_list/<int:product_id>/new_review', ReviewDetail.as_view(), name="new_review_rent"),

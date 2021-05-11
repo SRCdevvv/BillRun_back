@@ -84,7 +84,6 @@ class UserList(APIView): #전체 유저 리스트
 # 유저의 리뷰 내력(받은거)
 
 class UserDetail(APIView): #마이페이지
-
     def get_user(self, user_id): #특정 유저 가져오기
         try:
             model = User.objects.get(id=user_id)
@@ -172,6 +171,34 @@ class ProductList(APIView): #전체 상품 목록 (이건 그냥 개발시 참�
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
+class UserLendProductList(APIView): #특정 유저가 빌려주는 물품 리스트
+    def get_product(self, user_id):
+        try:
+            model = Product.objects.filter(user=user_id, borrow=True)
+            return model
+        except Deal.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_product(user_id):
+            return Response(f'Borrow Product with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(self.get_product(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
+class UserRentProductList(APIView): #특정 유저가 빌리는 물품 리스트
+    def get_product(self, user_id): 
+        try:
+            model = Product.objects.filter(user=user_id, borrow=False)
+            return model
+        except Deal.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_product(user_id):
+            return Response(f'Lend Product with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(self.get_product(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
 class ProductDetail(APIView): #상품 상세보기
     def get_product(self, product_id):
         try:
@@ -249,7 +276,7 @@ class DealDetail(APIView): #거래 상세보기
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
 
-class BorrowDealList(APIView): 
+class BorrowDealList(APIView): #특정 유저의 빌려준 거래 리스트
     def get_deal(self, user_id):
         try:
             # model = Deal.objects.get(id=user_id)
@@ -265,8 +292,8 @@ class BorrowDealList(APIView):
         return Response(serializer.data)
 
 
-class LendDealList(APIView):
-    def get_deal(self, user_id):
+class LendDealList(APIView): #특정 유저가 빌린 거래 리스트
+    def get_deal(self, user_id): 
         try:
             # model = Deal.objects.get(id=user_id)
             model = Deal.objects.filter(Q(user=user_id, product__borrow=True) | Q(product__user=user_id, product__borrow=False))
