@@ -110,7 +110,7 @@ class Product(models.Model):
     #     ('Untact', 'Untact'),
     # )
     
-    borrow = models.BooleanField(default=True)
+    lend = models.BooleanField(default=True)
     category = models.CharField(max_length=10, choices=GROUP)
     name = models.CharField(max_length=50)
     description = models.TextField()

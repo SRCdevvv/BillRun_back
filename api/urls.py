@@ -34,8 +34,8 @@ urlpatterns = [
     #거래 진행
     path('deal_list/', DealList.as_view(), name="deal_list"),
     path('deal_list/<int:deal_id>', DealDetail.as_view(), name="deal_datail"),
-    path('borrow_deal_list/<int:user_id>', BorrowDealList.as_view(), name="borrow_deal_list"),
-    path('lend_deal_list/<int:user_id>', LendDealList.as_view(), name="lend_deal_list"),
+    path('lend_deal_list/<int:user_id>', LendDealList.as_view(), name="borrow_deal_list"),
+    path('rent_deal_list/<int:user_id>', RentDealList.as_view(), name="lend_deal_list"),
 
     #리뷰
     path('review/', ReviewList.as_view(), name="review_list"),
