@@ -176,7 +176,7 @@ class UserLendProductList(APIView): #특정 유저가 빌려주는 물품 리스
         try:
             model = Product.objects.filter(user=user_id, lend=True)
             return model
-        except Deal.DoesNotExist:
+        except Product.DoesNotExist:
             return
 
     def get(self, request, user_id):
@@ -190,7 +190,7 @@ class UserRentProductList(APIView): #특정 유저가 빌리는 물품 리스트
         try:
             model = Product.objects.filter(user=user_id, lend=False)
             return model
-        except Deal.DoesNotExist:
+        except Product.DoesNotExist:
             return
 
     def get(self, request, user_id):
@@ -275,7 +275,6 @@ class DealDetail(APIView): #거래 상세보기
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
-
 class LendDealList(APIView): #특정 유저의 빌려준 거래 리스트
     def get_deal(self, user_id):
         try:
@@ -290,7 +289,6 @@ class LendDealList(APIView): #특정 유저의 빌려준 거래 리스트
             return Response(f'Deal with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = DealSerializer(self.get_deal(user_id), context={'request': request}, many=True)
         return Response(serializer.data)
-
 
 class RentDealList(APIView): #특정 유저가 빌린 거래 리스트
     def get_deal(self, user_id): 
@@ -312,13 +310,13 @@ class RentDealList(APIView): #특정 유저가 빌린 거래 리스트
 #거래에 대한 리뷰 작성 - 해당 거래의 유저들만 리뷰 한번만! 작성 가능
 #상품, 유저점수는 0.5~5로 0.5단위
 
-class ReviewList(APIView): #상품 목록 (이건 그냥 개발시 참고용!)
-    def get(self, request): #전체 거래 목록
+class ReviewList(APIView): #리뷰 목록 (이건 그냥 개발시 참고용!)
+    def get(self, request): #전체 리뷰 목록
         model = Review.objects.all()
         serializer = ReviewSerializer(model, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request): #리뷰 남기기
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
             # serializer.object.product_id.user_id.id
@@ -327,8 +325,58 @@ class ReviewList(APIView): #상품 목록 (이건 그냥 개발시 참고용!)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ReviewDetail(APIView): 
-    def get_review(self, product_id):#특정 상품에 대한 리뷰 가져오기
+
+class DealReviewPost(APIView):
+    def post(self, request): #거래 리뷰 작성
+        serializer = DealReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    ##거래에 참여한 2인만이 쓸 수 있다!!!!!!!!!!!!! 추가할것
+
+class DealReviewDetail(APIView): #특정 유저에 대한 리뷰 가져오기
+    def get_dealreview(self, user_id):
+        try:
+            model = DealReview.objects.filter(Q(Q(deal__user=user_id)|Q(deal__product__user=user_id)) & ~Q(user = user_id))
+            return model
+        except DealReview.DoesNotExist:
+            return
+    
+    def get(self, request, user_id):
+        if not self.get_dealreview(user_id):
+            return Response(f'DealReivew with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = DealReviewSerializer(self.get_dealreview(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
+class ProductReviewPost(APIView): #물품 리뷰 작성
+    def post(self, request): #물품 리뷰 작성
+        serializer = ProductReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    ##거래에 참여한 2인만이 쓸 수 있다!!!!!!!!!!!!! 추가할것
+
+class ProductReviewDetial(APIView): #특정 물품에 대한 리뷰 가져오기
+    def get_pro_review(self, product_id):
+        try:
+            model = ProductReview.objects.filter(product__id=product_id)
+            return model
+        except ProductReview.DoesNotExist:
+            return
+    
+    def get(self, request, product_id):
+        if not self.get_pro_review(product_id):
+            return Response(f'ProductReivew with ID {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductReviewSerializer(self.get_pro_review(product_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
+###이전리뷰
+class ReviewDetail(APIView): #특정 상품에 대한 리뷰 가져오기
+    def get_review(self, product_id):
         try:
             # 현재 로그인한 유저가 이 둘 중 하나라면 리뷰 작성할 수 있도록. 아닐 경우 권한이 없습니다.
             # 추후 작성

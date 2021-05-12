@@ -18,6 +18,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
         
+class PPSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        # fields = '__all__'
+        fields = ['name']
 
 class ProductPhotoSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(use_url=True)
@@ -69,6 +75,21 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+
+class DealReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DealReview
+        fields = '__all__'
+
+
+class ProductReviewSerializer(serializers.ModelSerializer):
+    user = UUSerializer(read_only=True)
+    product = PPSerializer(read_only=True)
+    class Meta:
+        model = ProductReview
+        # fields = '__all__'
+        fields = ('user', 'product', 'score', 'content', 'created_at')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

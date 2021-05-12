@@ -65,7 +65,7 @@ class AuthSms(models.Model):
         requests.post(apiUrl, headers=headers, data=json.dumps(body))
 
 
-# User
+
 class User(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=10, default='', unique=True)
@@ -153,7 +153,6 @@ class ProductPhoto(models.Model):
         return f"{self.product}"
     
 
-
 class Deal(models.Model):
     DEFAULT_PK=1
     DEALPROP = (
@@ -182,7 +181,7 @@ class Deal(models.Model):
         else:
             return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
 
-
+#Review
 class Review(models.Model):
     DEFAULT_PK=1
     post = models.TextField()
@@ -203,6 +202,35 @@ class Review(models.Model):
 
     photo = models.ImageField(upload_to=upload_review, null=True, blank=True)
 
+class DealReview(models.Model):
+    DEFAULT_PK=1
+    SCOREPROP = (
+        ('상', '상'),
+        ('중', '중'),
+        ('하', '하'),
+    )
+    q1 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
+    q2 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
+    q3 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
+    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE) #리뷰작성자
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
+
+    def __str__(self):
+        return f"{self.user.nickname} - {self.deal}"
+
+class ProductReview(models.Model):
+    DEFAULT_PK=1
+    score = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5)])
+    content = models.TextField()
+    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add = True, null= True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
+
+    def __str__(self):
+        return f"{self.user.nickname} - {self.product.name}"
 
 class Favorite(models.Model):
     DEFAULT_PK=1
