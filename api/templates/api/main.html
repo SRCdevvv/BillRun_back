@@ -60,6 +60,26 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
+                    <a href="{% url 'api:deal_review' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저에 대한 리뷰 작성 페이지</h5>
+                        </div>
+                        <p class="mb-1">/api/deal_review</p>
+                        <small>실제로는 '거래'에 대한 리뷰입니다. 거래에 참여한 두 명의 유저만 작성할 수 있도록 추가개발할 예정입니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:pro_review' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 물품에 대한 리뷰 작성 페이지</h5>
+                        </div>
+                        <p class="mb-1">/api/pro_review</p>
+                        <small>POST방식으로 작성하면 리뷰가 등록됩니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
                     <a href="{% url 'api:user_lend_product' user_id=1 %}" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">특정 유저의 빌려드림 물품 리스트</h5>
@@ -100,6 +120,26 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
+                    <a href="{% url 'api:user_review_detail' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저에 대한 리뷰 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/review/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:pro_review_detail' product_id=4 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 물품에 대한 리뷰 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/review/pro_id=(int:product_id)</p>
+                        <small>예시로 product id=4인 '타로밀크티향수' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
                     <a href="{% url 'api:deal_list' %}" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">거래 리스트</h5>
@@ -111,7 +151,7 @@
                 <div class="col-sm-6">
                     <a href="{% url 'api:review_list' %}" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">리뷰 리스트</h5>
+                            <h5 class="mb-1">리뷰 리스트(이전에 사용)</h5>
                         </div>
                         <p class="mb-1">/api/review</p>
                         <small>뒤에 상품번호의 id를 붙이면(/id) 해당 상품의 리뷰들이 나옵니다.</small>
