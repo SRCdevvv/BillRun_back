@@ -71,7 +71,8 @@ class User(models.Model):
     nickname = models.CharField(max_length=10, default='', unique=True)
     phone = models.CharField(max_length=11, blank=True)
     money = models.IntegerField(default=0)
-    level = models.CharField(max_length=10, default='', null=True, blank=True)
+    # level = models.CharField(max_length=10, default='', null=True, blank=True)
+    score = models.IntegerField(default=10)
     place = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
@@ -132,7 +133,7 @@ class Product(models.Model):
     # photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
-        if self.borrow:
+        if self.lend:
             return f"{self.id}) [빌려드림]{self.name} - {self.user.nickname}"
         else:
             return f"{self.id}) [빌림]{self.name} - {self.user.nickname}"
@@ -176,7 +177,7 @@ class Deal(models.Model):
     product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
-        if self.product.borrow:
+        if self.product.lend:
             return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
         else:
             return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
