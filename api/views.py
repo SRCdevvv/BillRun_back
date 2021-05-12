@@ -336,7 +336,7 @@ class DealReviewPost(APIView):
 
     ##거래에 참여한 2인만이 쓸 수 있다!!!!!!!!!!!!! 추가할것
 
-class DealReviewDetail(APIView): #특정 유저에 대한 리뷰 가져오기
+class UserReviewDetail(APIView): #특정 유저에 대한 리뷰 가져오기
     def get_dealreview(self, user_id):
         try:
             model = DealReview.objects.filter(Q(Q(deal__user=user_id)|Q(deal__product__user=user_id)) & ~Q(user = user_id))
@@ -360,7 +360,7 @@ class ProductReviewPost(APIView): #물품 리뷰 작성
 
     ##거래에 참여한 2인만이 쓸 수 있다!!!!!!!!!!!!! 추가할것
 
-class ProductReviewDetial(APIView): #특정 물품에 대한 리뷰 가져오기
+class ProductReviewDetail(APIView): #특정 물품에 대한 리뷰 가져오기
     def get_pro_review(self, product_id):
         try:
             model = ProductReview.objects.filter(product__id=product_id)

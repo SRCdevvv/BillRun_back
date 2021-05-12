@@ -9,7 +9,6 @@ class UUSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         fields = ('id', 'nickname')
 
-
 class UserSerializer(serializers.ModelSerializer):
     place = serializers.CharField(required=False)
     username = serializers.ReadOnlyField(source='user.username')
@@ -19,7 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class PPSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Product
         # fields = '__all__'
@@ -78,9 +76,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class DealReviewSerializer(serializers.ModelSerializer):
+    user = UUSerializer(read_only=True)
     class Meta:
         model = DealReview
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ('q1', 'q2', 'q3', 'user', 'created_at')
 
 
 class ProductReviewSerializer(serializers.ModelSerializer):
@@ -89,7 +89,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductReview
         # fields = '__all__'
-        fields = ('user', 'product', 'score', 'content', 'created_at')
+        fields = ('product', 'content', 'score', 'user', 'created_at')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

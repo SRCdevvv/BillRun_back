@@ -42,8 +42,8 @@ urlpatterns = [
     path('pro_review', ProductReviewPost.as_view(), name="pro_review"),
     path('deal_review', DealReviewPost.as_view(), name="deal_review"),
     path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"), #이전리뷰
-    path('review/pro_id=<int:product_id>', ProductReviewDetial.as_view(), name="pro_review_detail"), #물품리뷰
-    path('review/user_id=<int:user_id>', DealReviewDetail.as_view(), name="user_review_detail"), #유저리뷰
+    path('review/pro_id=<int:product_id>', ProductReviewDetail.as_view(), name="pro_review_detail"), #물품리뷰
+    path('review/user_id=<int:user_id>', UserReviewDetail.as_view(), name="user_review_detail"), #유저리뷰
 
     #좋아요 누르기
     path('like/<int:product_id>', product_like_toggle, name="like_toggle"),
