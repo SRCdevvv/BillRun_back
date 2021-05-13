@@ -221,16 +221,17 @@ class DealReview(models.Model):
         return f"{self.user.nickname} - {self.deal}"
 
 class ProductReview(models.Model):
-    DEFAULT_PK=1
+    DEFAULT_PK=3
     score = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5)])
     content = models.TextField()
-    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
     user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def __str__(self):
-        return f"{self.user.nickname} - {self.product.name}"
+        return f"{self.user.nickname} - {self.deal.product.name}"
 
 class Favorite(models.Model):
     DEFAULT_PK=1

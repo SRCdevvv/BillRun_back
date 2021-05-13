@@ -363,7 +363,7 @@ class ProductReviewPost(APIView): #물품 리뷰 작성
 class ProductReviewDetail(APIView): #특정 물품에 대한 리뷰 가져오기
     def get_pro_review(self, product_id):
         try:
-            model = ProductReview.objects.filter(product__id=product_id)
+            model = ProductReview.objects.filter(deal__product__id=product_id)
             return model
         except ProductReview.DoesNotExist:
             return

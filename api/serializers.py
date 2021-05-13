@@ -16,7 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        
+
+
 class PPSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -29,7 +30,6 @@ class ProductPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductPhoto
         fields = ['photo']
-
 
 class ProductSerializer(serializers.ModelSerializer):
     # user = UserSerializer(read_only=True)
@@ -68,12 +68,17 @@ class DealSerializer(serializers.ModelSerializer):
         fields = '__all__'
         # fields = ('id', 'product_id', 'user_id', 'period', 'datentime', 'deal_prop', 'deal_option')
 
+class DDSerializer(serializers.ModelSerializer):
+    product = PPSerializer(read_only=True)
+    class Meta:
+        model = Deal
+        fields = ['product']
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
-
 
 class DealReviewSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
@@ -82,14 +87,13 @@ class DealReviewSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         fields = ('q1', 'q2', 'q3', 'user', 'created_at')
 
-
 class ProductReviewSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
-    product = PPSerializer(read_only=True)
+    deal = DDSerializer(read_only=True)
     class Meta:
         model = ProductReview
         # fields = '__all__'
-        fields = ('product', 'content', 'score', 'user', 'created_at')
+        fields = ('deal', 'content', 'score', 'user', 'created_at')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
