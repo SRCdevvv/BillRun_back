@@ -120,11 +120,16 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
+    # def __str__(self):
+    #     if self.lend:
+    #         return f"{self.id}) [빌려드림]{self.name} - {self.user.nickname}"
+    #     else:
+    #         return f"{self.id}) [빌림]{self.name} - {self.user.nickname}"
     def __str__(self):
         if self.lend:
-            return f"{self.id}) [빌려드림]{self.name} - {self.user.nickname}"
+            return f"{self.id}) [빌려드림]{self.name}"
         else:
-            return f"{self.id}) [빌림]{self.name} - {self.user.nickname}"
+            return f"{self.id}) [빌림]{self.name}"
 
 
 class ProductPhoto(models.Model):
@@ -158,11 +163,16 @@ class Deal(models.Model):
     # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
+    # def __str__(self):
+    #     if self.product.lend:
+    #         return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
+    #     else:
+    #         return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
     def __str__(self):
         if self.product.lend:
-            return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
+            return f"{self.id}) [빌려드림]{self.product.name}"
         else:
-            return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
+            return f"{self.id}) [빌림]{self.product.name}"
 
 #Review
 class Review(models.Model):
@@ -200,8 +210,10 @@ class DealReview(models.Model):
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
+    # def __str__(self):
+    #     return f"{self.user.nickname} - {self.deal}"
     def __str__(self):
-        return f"{self.user.nickname} - {self.deal}"
+        return f"{self.deal}"
 
 class ProductReview(models.Model):
     DEFAULT_PK=3
@@ -212,9 +224,10 @@ class ProductReview(models.Model):
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
+    # def __str__(self):
+    #     return f"{self.user.nickname} - {self.deal.product.name}"
     def __str__(self):
-        return f"{self.user.nickname} - {self.deal.product.name}"
-
+        return f"{self.deal.product.name}"
 
 class Favorite(models.Model):
     DEFAULT_PK=1
@@ -223,8 +236,8 @@ class Favorite(models.Model):
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
-    def __str__(self):
-        return f"{self.user.nickname}의 찜 목록"
+    # def __str__(self):
+    #     return f"{self.user.nickname}의 찜 목록"
 
 class Notice(models.Model):
     title = models.CharField(max_length=50)
