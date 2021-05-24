@@ -9,7 +9,6 @@ class PhotoInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     inlines = [PhotoInline, ]
 
-admin.site.register(User)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Review)
 admin.site.register(DealReview)

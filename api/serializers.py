@@ -1,21 +1,21 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User as UU
-from api.models import *
+from .models import *
 import datetime
 
-class UUSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        # fields = '__all__'
-        fields = ('id', 'nickname')
+# class UUSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         # fields = '__all__'
+#         fields = ('id', 'nickname')
 
-class UserSerializer(serializers.ModelSerializer):
-    place = serializers.CharField(required=False)
-    username = serializers.ReadOnlyField(source='user.username')
+# class UserSerializer(serializers.ModelSerializer):
+#     place = serializers.CharField(required=False)
+#     username = serializers.ReadOnlyField(source='user.username')
 
-    class Meta:
-        model = User
-        fields = '__all__'
+#     class Meta:
+#         model = User
+#         fields = '__all__'
 
 
 class PPSerializer(serializers.ModelSerializer):
@@ -32,13 +32,12 @@ class ProductPhotoSerializer(serializers.ModelSerializer):
         fields = ['photo']
 
 class ProductSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
     name = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
     caution = serializers.CharField(required=False)
     price = serializers.CharField(required=False)
     price_prop = serializers.CharField(required=False)
-    user = UserSerializer(read_only=True)
+    # user = UserSerializer(read_only=True)
     photos = serializers.SerializerMethodField()
 
     def get_photos(self, obj):
@@ -59,7 +58,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class DealSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    user = UserSerializer(read_only=True)
+    # user = UserSerializer(read_only=True)
     datentime = serializers.DateTimeField(required=False)
     period = serializers.CharField(required=False)
 
@@ -81,27 +80,29 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DealReviewSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     class Meta:
         model = DealReview
         # fields = '__all__'
-        fields = ('q1', 'q2', 'q3', 'user', 'created_at')
+        # fields = ('q1', 'q2', 'q3', 'user', 'created_at')
+        fields = ('q1', 'q2', 'q3', 'created_at')
 
 class ProductReviewSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     deal = DDSerializer(read_only=True)
     class Meta:
         model = ProductReview
         # fields = '__all__'
-        fields = ('deal', 'content', 'score', 'user', 'created_at')
+        # fields = ('deal', 'content', 'score', 'user', 'created_at')
+        fields = ('deal', 'content', 'score', 'created_at')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     class Meta:
         model = Favorite
-        fields = ('user', 'product')
-        # fields = '__all__'
+        # fields = ('user', 'product')
+        fields = '__all__'
 
 
 class NoticeSerializer(serializers.ModelSerializer):

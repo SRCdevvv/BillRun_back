@@ -35,6 +35,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # 'account',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,8 +57,8 @@ INSTALLED_APPS = [
 
     #apps
     'api',
-    # 'account',
-    'account.apps.AccountConfig',
+    
+    # 'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +108,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = "account.BillRunUser"
+# AUTH_USER_MODEL = "account.BillRunUser"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
