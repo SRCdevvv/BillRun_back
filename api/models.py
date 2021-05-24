@@ -66,26 +66,26 @@ class AuthSms(models.Model):
 
 
 
-class User(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=10, default='', unique=True)
-    phone = models.CharField(max_length=11, blank=True)
-    money = models.IntegerField(default=0)
-    # level = models.CharField(max_length=10, default='', null=True, blank=True)
-    score = models.IntegerField(default=10)
-    place = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add = True, null= True)
-    updated_at = models.DateTimeField(auto_now = True, null= True)
+# class User(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     nickname = models.CharField(max_length=10, default='', unique=True)
+#     phone = models.CharField(max_length=11, blank=True)
+#     money = models.IntegerField(default=0)
+#     # level = models.CharField(max_length=10, default='', null=True, blank=True)
+#     score = models.IntegerField(default=10)
+#     place = models.CharField(max_length=50)
+#     created_at = models.DateTimeField(auto_now_add = True, null= True)
+#     updated_at = models.DateTimeField(auto_now = True, null= True)
     
-    def upload_profile(self, filename):
-        path = 'user/{}'.format(filename)
-        # unquote(path)
-        return path
+#     def upload_profile(self, filename):
+#         path = 'user/{}'.format(filename)
+#         # unquote(path)
+#         return path
 
-    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
+#     profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
 
-    def __str__(self):
-        return f"{self.id}) {self.nickname}({self.user.username})"
+#     def __str__(self):
+#         return f"{self.id}) {self.nickname}({self.user.username})"
 
 
 class Product(models.Model):
@@ -106,11 +106,7 @@ class Product(models.Model):
         ('Household', '생활잡화'),
         ('Etc', '기타'),
     )
-    # DEALOP = (
-    #     ('F2F', 'Face to Face'),
-    #     ('Untact', 'Untact'),
-    # )
-    
+
     lend = models.BooleanField(default=True)
     category = models.CharField(max_length=10, choices=GROUP)
     name = models.CharField(max_length=50)
@@ -121,16 +117,9 @@ class Product(models.Model):
     place_option = models.BooleanField(default=True) #안심거래옵션
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
-    # deal_option = models.CharField(max_length=10, null=True, blank=True, default="", choices=DEALOP)
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
-
-    # def upload_photo(self, filename):
-    #     path = 'photo/{}'.format(filename)
-    #     return path
-
-    # photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
         if self.lend:
@@ -144,7 +133,6 @@ class ProductPhoto(models.Model):
     
     def upload_photo(self, filename):
         path = 'photo/{}'.format(filename)
-        # unquote(path)
         return path
 
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
@@ -160,10 +148,7 @@ class Deal(models.Model):
         ('PRO', 'In Progress'),
         ('COM', 'Complete'),
     )
-    # DEALOP = (
-    #     ('F2F', 'Face to Face'),
-    #     ('Untact', 'Untact'),
-    # )
+
     deal_prop = models.CharField(max_length=10, default=1, choices=DEALPROP)
     contract = models.BooleanField(default=False)
     contract2 = models.BooleanField(default=False)
@@ -171,8 +156,7 @@ class Deal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
     period = models.IntegerField()
-    # deal_option = models.CharField(max_length=10, default="", choices=DEALOP)
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -188,7 +172,7 @@ class Review(models.Model):
     product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
@@ -213,7 +197,7 @@ class DealReview(models.Model):
     q2 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
     q3 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
     deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE) #리뷰작성자
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE) #리뷰작성자
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
@@ -224,18 +208,18 @@ class ProductReview(models.Model):
     DEFAULT_PK=3
     score = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5)])
     content = models.TextField()
-    # product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
     deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
     def __str__(self):
         return f"{self.user.nickname} - {self.deal.product.name}"
 
+
 class Favorite(models.Model):
     DEFAULT_PK=1
-    user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product, blank=True)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
