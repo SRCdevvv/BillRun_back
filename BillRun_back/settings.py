@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     #apps
     'api',
+    # 'account',
     
     # 'account.apps.AccountConfig',
 ]
@@ -108,7 +109,11 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
-# AUTH_USER_MODEL = "account.BillRunUser"
+AUTH_USER_MODEL = "api.BillRunUser"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
