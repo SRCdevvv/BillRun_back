@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
+# from ..api.secret import DJ_SECRET
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ujy)dydlrzl_pya01zg4%fe&bji^u_9o$d9a3@m@$2!xem5atj'
+# SECRET_KEY = DJ_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -48,11 +50,13 @@ INSTALLED_APPS = [
     #rest_auth+allauth
     'rest_auth',
     'allauth',
-    'allauth.account',
+    # 'allauth.account',
     'rest_auth.registration',
 
     #apps
     'api',
+    # 'account',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -101,6 +105,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = "account.BillRunUser"
 
 AUTH_PASSWORD_VALIDATORS = [
     {

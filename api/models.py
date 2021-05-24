@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.utils import timezone
 from random import randint
-from .keys import *
+from .secret import *
 # from urllib.parse import unquote
 
 import sys
