@@ -1,4 +1,6 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import urls
+import rest_framework
 from .views import *
 from django.conf.urls import url, static
 from django.conf import settings
@@ -6,8 +8,12 @@ from django.conf import settings
 app_name='api'
 urlpatterns = [
     path('', main, name="main"),
-    path('user_list/', UserList.as_view(), name="user_list"),
-    path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
+    # path('user_list/', UserList.as_view(), name="user_list"),
+    # path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
+
+    #Auth
+    path('signup/', UserCreate.as_view()),
+    path('api-auth/', include(rest_framework.urls)),
 
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),

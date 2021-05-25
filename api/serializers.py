@@ -17,6 +17,21 @@ import datetime
 #         model = User
 #         fields = '__all__'
 
+class UserSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        user = BillrunUser.objects.create_user(
+            phone = validated_data['phone'],
+            community = validated_data['community'],
+            email = validated_data['email'],
+            nickname = validated_data['nickname'],
+            lat = validated_data['lat'],
+            lng = validated_data['lng']
+        )
+        return user
+    class Meta:
+        model = BillrunUser
+        fields = '__all__'
+
 
 class PPSerializer(serializers.ModelSerializer):
     class Meta:

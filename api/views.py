@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.views import generic
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from .serializers import *
 from .models import *
 import datetime
@@ -63,19 +64,19 @@ class SMSConfirm(APIView):
 
 
 #### User
-class UserList(APIView): #전체 유저 리스트
-    def get(self, request):
-        model = User.objects.all()
-        # serializer = UserSerializer(model, many=True)
-        serializer = UserSerializer(model, context={'request': request}, many=True)
-        return Response(serializer.data)
+# class UserList(APIView): #전체 유저 리스트
+#     def get(self, request):
+#         model = User.objects.all()
+#         # serializer = UserSerializer(model, many=True)
+#         serializer = UserSerializer(model, context={'request': request}, many=True)
+#         return Response(serializer.data)
 
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         serializer = UserSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ## 마이페이지
 # 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
@@ -83,66 +84,70 @@ class UserList(APIView): #전체 유저 리스트
 # 유저의 거래 내역(Deal) - 대면/비대면 필터링
 # 유저의 리뷰 내력(받은거)
 
-class UserDetail(APIView): #마이페이지
-    def get_user(self, user_id): #특정 유저 가져오기
-        try:
-            model = User.objects.get(id=user_id)
+# class UserDetail(APIView): #마이페이지
+#     def get_user(self, user_id): #특정 유저 가져오기
+#         try:
+#             model = User.objects.get(id=user_id)
 
-            value = 0
-            ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
-            #빌려드림에서 내가 올린 상품의 금액
-            for x in Product.objects.filter(user=model.id, lend=True, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
-                # period = 
-                value += x.price
-            #빌림에서 내가 빌려준 상품의 금액
-            for y in Product.objects.filter(deal__user=model.id, lend=False, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
-                value += y.price
+#             value = 0
+#             ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
+#             #빌려드림에서 내가 올린 상품의 금액
+#             for x in Product.objects.filter(user=model.id, lend=True, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
+#                 # period = 
+#                 value += x.price
+#             #빌림에서 내가 빌려준 상품의 금액
+#             for y in Product.objects.filter(deal__user=model.id, lend=False, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
+#                 value += y.price
 
-            model.money = value #내가 번 돈 저장
-            model.save()
-            return model
-        except User.DoesNotExist:
-            return
+#             model.money = value #내가 번 돈 저장
+#             model.save()
+#             return model
+#         except User.DoesNotExist:
+#             return
 
-    # def sum_price(self, request, user_id):
-    #     if not self.get_user(user_id):
-    #         return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-    #     serializer = UserSerializer(self.get_user(user_id), data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.object.level = 
-    #         serializer.save()
-    #         return Response (serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+#     # def sum_price(self, request, user_id):
+#     #     if not self.get_user(user_id):
+#     #         return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#     #     serializer = UserSerializer(self.get_user(user_id), data=request.data)
+#     #     if serializer.is_valid():
+#     #         serializer.object.level = 
+#     #         serializer.save()
+#     #         return Response (serializer.data, status=status.HTTP_201_CREATED)
+#     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-    def get(self, request, user_id):
-        if not self.get_user(user_id):
-            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(self.get_user(user_id), context={'request': request})
-        return Response(serializer.data)
+#     def get(self, request, user_id):
+#         if not self.get_user(user_id):
+#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#         serializer = UserSerializer(self.get_user(user_id), context={'request': request})
+#         return Response(serializer.data)
 
-    def put(self, request, user_id):
-        if not self.get_user(user_id):
-            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = UserSerializer(self.get_user(user_id), data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+#     def put(self, request, user_id):
+#         if not self.get_user(user_id):
+#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#         serializer = UserSerializer(self.get_user(user_id), data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-    def delete(self, request, user_id):
-        if not self.get_user(user_id):
-            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        model = self.get_user(user_id)
-        model.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, user_id):
+#         if not self.get_user(user_id):
+#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#         model = self.get_user(user_id)
+#         model.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 아직 사용 안했고 추후 수정해야함!
-    def get(self, request, user_id):
-        model = User.objects.get(id=user_id)
-        # deals_a = Deal.objects.filter(user_id_id= user_id)
-        # serializer = UserSerializer(model)
-        return Response(serializer.data)
+# class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 아직 사용 안했고 추후 수정해야함!
+#     def get(self, request, user_id):
+#         model = User.objects.get(id=user_id)
+#         # deals_a = Deal.objects.filter(user_id_id= user_id)
+#         # serializer = UserSerializer(model)
+#         return Response(serializer.data)
 
+#### New User
+class UserCreate(generics.CreateAPIView):
+    queryset = BillrunUser.objects.all()
+    serializer_class = UserSerializer
 
 
 #### Product
