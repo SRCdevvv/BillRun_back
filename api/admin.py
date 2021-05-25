@@ -17,4 +17,18 @@ admin.site.register(Deal)
 admin.site.register(Favorite)
 admin.site.register(Notice)
 admin.site.register(AuthSms)
-admin.site.register(BillrunUser)
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = (
+        'nickname',
+        'email',
+        'community',
+        # 'date_joined'
+    )
+
+    list_display_links = (
+        'nickname',
+        'email'
+    )
+
+admin.site.register(BillrunUser, UserAdmin)

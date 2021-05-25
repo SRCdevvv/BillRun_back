@@ -91,9 +91,11 @@ class UserManager(BaseUserManager):
     def create_user(self, phone, community, email, nickname, lat, lng, password=None):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
+        #TODO raise 오류 여러개 추가
         n = randint(1000,9999)
         # nick = "빌런" + n
         fernet = Fernet(ENCODE_KEY)
+        #TODO 닉네임 랜덤생성으로 바꿀것
         #TODO 중복체크추가할것
         user = self.model(
             # phone = fernet.encrypt(phone.encode()),
@@ -108,14 +110,15 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, password):
+    def create_superuser(self, phone, email, nickname, password):
+        #TODO 관리자 수만큼 숫자따와서 이름 옆에 붙여주기. 닉네임은 굳이 생성할 필요가 없어서
         fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
             # phone = fernet.encrypt(bytes(phone, 'utf-8')),
             phone = phone,
             community = 1,
-            email = "hayuyu@naver.com",
-            nickname = "운영자",
+            email = email,
+            nickname = nickname,
             lat = 0, 
             lng = 0,
             password = password
@@ -134,6 +137,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         ('한양', '한양대학교'),
         # ('가천', '가천대학교'),
         # ('동국', '동국대학교'),
+        ('관리자', '기타'),
     )
 
     phone = models.CharField(max_length=11, unique=True)
@@ -164,7 +168,8 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'phone'    
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = ['nickname', 'email']
 
 
 class Product(models.Model):
