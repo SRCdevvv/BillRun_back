@@ -92,15 +92,15 @@ class UserManager(BaseUserManager):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
         n = randint(1000,9999)
-        nick = "빌런" + n
+        # nick = "빌런" + n
         fernet = Fernet(ENCODE_KEY)
         #TODO 중복체크추가할것
         user = self.model(
-            phone = fernet.encrypt(phone.encode()),
+            # phone = fernet.encrypt(phone.encode()),
+            phone = phone,
             community = community,
-            email = self.noralize_email(email),
-            # nickname = nick,
-            nickname = nickname,
+            email = self.normalize_email(email),
+            nickname = nickname + str(n),
             lat = lat,
             lng = lng
         )
@@ -109,11 +109,18 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, password):
+        fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
+            # phone = fernet.encrypt(bytes(phone, 'utf-8')),
             phone = phone,
-            # nickname = nickname,
+            community = 1,
+            email = "hayuyu@naver.com",
+            nickname = "운영자",
+            lat = 0, 
+            lng = 0,
             password = password
         )
+        user.is_active = True
         user.is_admin = True
         user.is_superuser = True
         user.is_staff = True
@@ -121,7 +128,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class BillRunUser(AbstractBaseUser, PermissionsMixin):
+class BillrunUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     Group = (
         ('한양', '한양대학교'),
