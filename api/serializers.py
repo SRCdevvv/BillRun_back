@@ -1,8 +1,17 @@
+from django.db.models import fields
+from django.http import request
+from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
-from django.contrib.auth.models import User as UU
+from django.contrib.auth.models import User as UU, update_last_login
+from django.contrib.auth import authenticate, get_user_model, login
+from .auth_backend import PasswordlessAuthBackend
 from .models import *
 import datetime
 
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
+
+###기존 유저
 # class UUSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = User
@@ -17,7 +26,7 @@ import datetime
 #         model = User
 #         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     def create(self, validated_data):
         user = BillrunUser.objects.create_user(
             phone = validated_data['phone'],
@@ -30,7 +39,38 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     class Meta:
         model = BillrunUser
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['phone', 'community', 'email', 'nickname', 'lat', 'lng']
+
+
+class UserLoginSerializer(serializers.ModelSerializer): #로그인
+    phone = serializers.CharField(max_length=11)
+    token = serializers.CharField(max_length=255, read_only=True)
+
+    def validate(self, data):
+        phone = data.get("phone", None)
+        user = PasswordlessAuthBackend.authenticate(phone=phone)
+        print(user) #로그인유저확인!
+        if user is None:
+            return {
+                'phone': 'None'
+            }
+        try:
+            payload = JWT_PAYLOAD_HANDLER(user)
+            jwt_token = JWT_ENCODE_HANDLER(payload)
+            update_last_login(None, user)
+        except BillrunUser.DoesNotExist:
+            raise serializers.ValidationError(
+                'User with given phone number does not exists'
+            )
+        return {
+            'phone': user.phone,
+            'token': jwt_token
+        }
+
+    class Meta:
+        model = BillrunUser
+        fields = ['phone', 'token']
 
 
 class PPSerializer(serializers.ModelSerializer):

@@ -13,7 +13,7 @@ urlpatterns = [
 
     #Auth
     path('signup/', UserCreate.as_view()),
-    path('api-auth/', include(rest_framework.urls)),
+    path('login/', login),
 
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),

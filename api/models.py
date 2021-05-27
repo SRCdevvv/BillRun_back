@@ -88,7 +88,7 @@ class AuthSms(models.Model):
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, phone, community, email, nickname, lat, lng, password=None):
+    def create_user(self, phone, community, email, nickname, lat, lng):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
         #TODO raise 오류 여러개 추가
@@ -106,11 +106,12 @@ class UserManager(BaseUserManager):
             lat = lat,
             lng = lng
         )
-        user.set_password(password)
+        # user.set_password(password)
+        user.set_unusable_password()
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, email, nickname, password):
+    def create_superuser(self, phone, email, nickname):
         #TODO 관리자 수만큼 숫자따와서 이름 옆에 붙여주기. 닉네임은 굳이 생성할 필요가 없어서
         fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
@@ -121,7 +122,7 @@ class UserManager(BaseUserManager):
             nickname = nickname,
             lat = 0, 
             lng = 0,
-            password = password
+            # password = password
         )
         user.is_active = True
         user.is_admin = True
@@ -134,9 +135,9 @@ class UserManager(BaseUserManager):
 class BillrunUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     Group = (
-        ('한양', '한양대학교'),
-        # ('가천', '가천대학교'),
-        # ('동국', '동국대학교'),
+        ('한양대', '한양대학교'),
+        # ('가천대', '가천대학교'),
+        # ('동국대', '동국대학교'),
         ('관리자', '기타'),
     )
 
@@ -163,7 +164,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
-    is_active = models.BooleanField(default=False)    
+    is_active = models.BooleanField(default=True)    #TODO
     is_admin = models.BooleanField(default=False)    
     is_superuser = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False)

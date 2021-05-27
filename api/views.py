@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
-from django.views import generic
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from .serializers import *
 from .models import *
-import datetime
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+
 import json
 
 # main page
@@ -145,10 +147,41 @@ class SMSConfirm(APIView):
 #         return Response(serializer.data)
 
 #### New User
-class UserCreate(generics.CreateAPIView):
+class UserCreate(generics.CreateAPIView): #회원가입
     queryset = BillrunUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserCreateSerializer
 
+# class UserLogin(generics.RetrieveUpdateDestroyAPIView):
+#     def get(self, request):
+#         serializer = UserLoginSerializer(data=request.data)
+#         if not serializer.is_valid(raise_exception=True):
+#             return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
+#         if serializer.validated_data['phone'] == "None":
+#             return Response({"message": "fail"}, status=status.HTTP_200_OK)
+        
+#         response = {
+#             'success': 'True',
+#             'token': serializer.data['token']
+#         }
+#         return Response(response, status=status.HTTP_200_OK)
+
+#{"phone":"01066278667"}
+#로그인
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    if request.method == 'POST':
+        serializer = UserLoginSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
+        if serializer.validated_data['phone'] == "None":
+            return Response({"message": "fail"}, status=status.HTTP_200_OK)
+        
+        response = {
+            'success': 'True',
+            'token': serializer.data['token']
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 #### Product
 class LendProductList(APIView): #빌려주는 상품 목록
