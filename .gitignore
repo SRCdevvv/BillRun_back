@@ -1,4 +1,3 @@
 my_settings.py
 api/secret.py
-acoount/secret.py
-account/encode.py
+api/encode.py
