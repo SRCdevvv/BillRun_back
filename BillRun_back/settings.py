@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
+# from ..api.secret import DJ_SECRET
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ujy)dydlrzl_pya01zg4%fe&bji^u_9o$d9a3@m@$2!xem5atj'
+# SECRET_KEY = DJ_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,7 +35,11 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'account',
+    
+    # 'django.contrib.admin',
+    'admin_view_permission',
+    'BillRun_back.apps.MyAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -48,11 +54,14 @@ INSTALLED_APPS = [
     #rest_auth+allauth
     'rest_auth',
     'allauth',
-    'allauth.account',
+    # 'allauth.account',
     'rest_auth.registration',
 
     #apps
     'api',
+    # 'account',
+    
+    # 'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -102,20 +111,30 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_USER_MODEL = "api.BillRunUser"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+AUTHENTICATION_BACKENDS = (
+    'api.auth_backend.PasswordlessAuthBackend',
+)
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
 
 
 # Internationalization
@@ -146,10 +165,15 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.IsAuthenticated', #인증된 사용자만 접근 가능
         # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근 가능
     ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer', #HTML이 아닌 JSON 형태로 띄우기
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication', #username, pw
         # 'rest_framework.authentication.TokenAuthentication', #토큰 방식으로 로그인
@@ -165,13 +189,20 @@ JWT_AUTH = {
     'JWT_ALGORITHM': 'HS256', # 암호화 알고리즘
     'JWT_ALLOW_REFRESH': True, # refresh 사용 여부
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7), # 유효기간 설정
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28), # JWT 토큰 갱신 유효기간
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30), # JWT 토큰 갱신 유효기간
+
+    'JWT_ENCODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_encode_handler',
+    'JWT_DECODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_decode_handler',
+    'JWT_PAYLOAD_HANDLER':
+        'rest_framework_jwt.utils.jwt_payload_handler',
 }
 
 #Email
 EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
 EMAIL_PORT = '587' 			 # 서버 포트
 EMAIL_HOST_USER = 'sarangchecompany@gmail.com' 	 # 우리가 사용할 Gmail
-EMAIL_HOST_PASSWORD = 'src121212'		 # 우리가 사용할 Gmail p
+EMAIL_HOST_PASSWORD = 'src121212'		 # 우리가 사용할 Gmail pw
 EMAIL_USE_TLS = True			 # TLS 보안 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정

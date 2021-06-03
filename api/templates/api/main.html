@@ -18,7 +18,7 @@
         <h1 Align="center">😈 빌Run API 😈</h1>
         <br>
         <div class="list-group">
-            <div class="row">
+            {% comment %} <div class="row">
                 <div class="col-sm-6">
                     <a href="{% url 'api:user_list' %}" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
@@ -37,7 +37,7 @@
                         <small>뒤에 User id 붙이면(/id) 해당 User의 좋아요 목록이 나옵니다.</small>
                     </a>
                 </div>
-            </div>
+            </div> {% endcomment %}
             <div class="row">
                 <div class="col-sm-6">
                     <a href="{% url 'api:lend_product_list' %}" class="list-group-item list-group-item-action">

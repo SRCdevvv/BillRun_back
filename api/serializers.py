@@ -1,21 +1,76 @@
+from django.db.models import fields
+from django.http import request
+from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
-from django.contrib.auth.models import User as UU
-from api.models import *
+from django.contrib.auth.models import User as UU, update_last_login
+from django.contrib.auth import authenticate, get_user_model, login
+from .auth_backend import PasswordlessAuthBackend
+from .models import *
 import datetime
 
-class UUSerializer(serializers.ModelSerializer):
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
+
+###기존 유저
+# class UUSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         # fields = '__all__'
+#         fields = ('id', 'nickname')
+
+# class UserSerializer(serializers.ModelSerializer):
+#     place = serializers.CharField(required=False)
+#     username = serializers.ReadOnlyField(source='user.username')
+
+#     class Meta:
+#         model = User
+#         fields = '__all__'
+
+class UserCreateSerializer(serializers.ModelSerializer): #회원가입
+    def create(self, validated_data):
+        user = BillrunUser.objects.create_user(
+            phone = validated_data['phone'],
+            community = validated_data['community'],
+            email = validated_data['email'],
+            nickname = validated_data['nickname'],
+            lat = validated_data['lat'],
+            lng = validated_data['lng']
+        )
+        return user
     class Meta:
-        model = User
+        model = BillrunUser
         # fields = '__all__'
-        fields = ('id', 'nickname')
+        fields = ['phone', 'community', 'email', 'nickname', 'lat', 'lng']
 
-class UserSerializer(serializers.ModelSerializer):
-    place = serializers.CharField(required=False)
-    username = serializers.ReadOnlyField(source='user.username')
+
+class UserLoginSerializer(serializers.ModelSerializer): #로그인
+    phone = serializers.CharField(max_length=11)
+    token = serializers.CharField(max_length=255, read_only=True)
+
+    def validate(self, data):
+        phone = data.get("phone", None)
+        user = PasswordlessAuthBackend.authenticate(phone=phone)
+        print(user) #로그인유저확인!
+        if user is None:
+            return {
+                'phone': 'None'
+            }
+        try:
+            payload = JWT_PAYLOAD_HANDLER(user)
+            jwt_token = JWT_ENCODE_HANDLER(payload)
+            update_last_login(None, user)
+        except BillrunUser.DoesNotExist:
+            raise serializers.ValidationError(
+                'User with given phone number does not exists'
+            )
+        return {
+            'phone': user.phone,
+            'token': jwt_token
+        }
 
     class Meta:
-        model = User
-        fields = '__all__'
+        model = BillrunUser
+        fields = ['phone', 'token']
 
 
 class PPSerializer(serializers.ModelSerializer):
@@ -32,13 +87,12 @@ class ProductPhotoSerializer(serializers.ModelSerializer):
         fields = ['photo']
 
 class ProductSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
     name = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
     caution = serializers.CharField(required=False)
     price = serializers.CharField(required=False)
     price_prop = serializers.CharField(required=False)
-    user = UserSerializer(read_only=True)
+    # user = UserSerializer(read_only=True)
     photos = serializers.SerializerMethodField()
 
     def get_photos(self, obj):
@@ -59,7 +113,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class DealSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    user = UserSerializer(read_only=True)
+    # user = UserSerializer(read_only=True)
     datentime = serializers.DateTimeField(required=False)
     period = serializers.CharField(required=False)
 
@@ -81,27 +135,29 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DealReviewSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     class Meta:
         model = DealReview
         # fields = '__all__'
-        fields = ('q1', 'q2', 'q3', 'user', 'created_at')
+        # fields = ('q1', 'q2', 'q3', 'user', 'created_at')
+        fields = ('q1', 'q2', 'q3', 'created_at')
 
 class ProductReviewSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     deal = DDSerializer(read_only=True)
     class Meta:
         model = ProductReview
         # fields = '__all__'
-        fields = ('deal', 'content', 'score', 'user', 'created_at')
+        # fields = ('deal', 'content', 'score', 'user', 'created_at')
+        fields = ('deal', 'content', 'score', 'created_at')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    user = UUSerializer(read_only=True)
+    # user = UUSerializer(read_only=True)
     class Meta:
         model = Favorite
-        fields = ('user', 'product')
-        # fields = '__all__'
+        # fields = ('user', 'product')
+        fields = '__all__'
 
 
 class NoticeSerializer(serializers.ModelSerializer):
