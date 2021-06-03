@@ -1,5 +1,3 @@
-from django.db.models import fields
-from django.http import request
 from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth.models import User as UU, update_last_login
@@ -18,13 +16,14 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 #         # fields = '__all__'
 #         fields = ('id', 'nickname')
 
-# class UserSerializer(serializers.ModelSerializer):
-#     place = serializers.CharField(required=False)
-#     username = serializers.ReadOnlyField(source='user.username')
+class UserSerializer(serializers.ModelSerializer):
+    # place = serializers.CharField(required=False)
+    # username = serializers.ReadOnlyField(source='user.username')
 
-#     class Meta:
-#         model = User
-#         fields = '__all__'
+    class Meta:
+        model = BillrunUser
+        # fields = '__all__'
+        fields = ['id', 'nickname', 'email', 'community', 'lat', 'lng', 'location', 'money', 'score', 'profile', 'is_active']
 
 class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     def create(self, validated_data):
@@ -93,6 +92,8 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.CharField(required=False)
     price_prop = serializers.CharField(required=False)
     # user = UserSerializer(read_only=True)
+    lat = serializers.IntegerField(required=False)
+    lng = serializers.IntegerField(required=False)
     photos = serializers.SerializerMethodField()
 
     def get_photos(self, obj):

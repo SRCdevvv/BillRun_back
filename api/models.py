@@ -19,7 +19,7 @@ photo_default = 'photo/no_image.png'
 
 # Auth
 class AuthSms(models.Model):
-    phone_number = models.CharField(verbose_name='휴대폰 번호', primary_key=True, max_length=11)
+    phone = models.CharField(verbose_name='휴대폰 번호', primary_key=True, max_length=11)
     auth_number = models.IntegerField(verbose_name='인증 번호')
 
     class Meta:
@@ -56,7 +56,7 @@ class AuthSms(models.Model):
             'from': PHONE,
             'content': '인증 번호 [{}]를 입력해주세요.'.format(self.auth_number),
             'messages':[{
-                    'to':self.phone_number
+                    'to':self.phone
                 }]
         }
         requests.post(apiUrl, headers=headers, data=json.dumps(body))
@@ -144,8 +144,9 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     community = models.CharField(max_length=30, choices=Group)
     email = models.EmailField(max_length=254, unique=True)
     nickname = models.CharField(max_length=20, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6) #위도
-    lng = models.DecimalField(max_digits=9, decimal_places=6) #경도
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #위도
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #경도
+    location = models.CharField(max_length=50, default='', null=True, blank=True)
 
     money = models.IntegerField(default=0)
     score = models.IntegerField(default=10)
@@ -225,6 +226,9 @@ class Product(models.Model):
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #위도
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #경도
+    location = models.CharField(max_length=50, default='', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
