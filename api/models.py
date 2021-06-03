@@ -106,12 +106,11 @@ class UserManager(BaseUserManager):
             lat = lat,
             lng = lng
         )
-        # user.set_password(password)
         user.set_unusable_password()
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, email, nickname):
+    def create_superuser(self, phone, email, nickname, password):
         #TODO 관리자 수만큼 숫자따와서 이름 옆에 붙여주기. 닉네임은 굳이 생성할 필요가 없어서
         fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
@@ -122,8 +121,8 @@ class UserManager(BaseUserManager):
             nickname = nickname,
             lat = 0, 
             lng = 0,
-            # password = password
         )
+        user.set_password(password)
         user.is_active = True
         user.is_admin = True
         user.is_superuser = True
@@ -171,6 +170,29 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['nickname', 'email']
+
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
+
+    # @property
+    # def is_active(self):
+    #     "Is the user activate"
+    #     # Simplest possible answer: All admins are staff
+    #     return self.is_active
 
 
 class Product(models.Model):

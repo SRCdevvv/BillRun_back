@@ -169,7 +169,7 @@ class UserCreate(generics.CreateAPIView): #회원가입
 #로그인
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def login(request):
+def signin(request):
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
         if not serializer.is_valid(raise_exception=True):
@@ -182,6 +182,7 @@ def login(request):
             'token': serializer.data['token']
         }
         return Response(response, status=status.HTTP_200_OK)
+
 
 #### Product
 class LendProductList(APIView): #빌려주는 상품 목록

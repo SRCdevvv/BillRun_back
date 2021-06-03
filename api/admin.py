@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import *
-
-# Register your models here.
+from BillRun_back.admin import admin_site
 
 class PhotoInline(admin.TabularInline):
     model = ProductPhoto
@@ -9,14 +8,14 @@ class PhotoInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     inlines = [PhotoInline, ]
 
-admin.site.register(Product, ProductAdmin)
-admin.site.register(Review)
-admin.site.register(DealReview)
-admin.site.register(ProductReview)
-admin.site.register(Deal)
-admin.site.register(Favorite)
-admin.site.register(Notice)
-admin.site.register(AuthSms)
+admin_site.register(Product, ProductAdmin)
+admin_site.register(Review)
+admin_site.register(DealReview)
+admin_site.register(ProductReview)
+admin_site.register(Deal)
+admin_site.register(Favorite)
+admin_site.register(Notice)
+admin_site.register(AuthSms)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
@@ -31,4 +30,6 @@ class UserAdmin(admin.ModelAdmin):
         'email'
     )
 
-admin.site.register(BillrunUser, UserAdmin)
+admin_site.register(BillrunUser, UserAdmin)
+
+

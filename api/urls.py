@@ -12,8 +12,8 @@ urlpatterns = [
     # path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
 
     #Auth
-    path('signup/', UserCreate.as_view()),
-    path('login/', login),
+    path('signup/', UserCreate.as_view(), name="signup"),
+    path('signin/', signin, name="signin"),
 
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
