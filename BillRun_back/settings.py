@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     # 'account',
     
     # 'django.contrib.admin',
-    'admin_view_permission',
     'BillRun_back.apps.MyAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',

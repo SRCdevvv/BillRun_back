@@ -22,8 +22,8 @@ class AuthSms(models.Model):
     phone = models.CharField(verbose_name='휴대폰 번호', primary_key=True, max_length=11)
     auth_number = models.IntegerField(verbose_name='인증 번호')
 
-    class Meta:
-        db_table = 'auth_numbers'
+    # class Meta:
+    #     db_table = 'auth_numbers'
 
     def save(self, *args, **kwargs):
         self.auth_number = randint(1000, 10000)
@@ -126,7 +126,6 @@ class UserManager(BaseUserManager):
         user.is_active = True
         user.is_admin = True
         user.is_superuser = True
-        user.is_staff = True
         user.save(using=self._db)
         return user
 

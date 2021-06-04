@@ -44,23 +44,35 @@ class SMSVerification(APIView):
         except KeyError:
             return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SMSConfirm(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            phone = data['phone_number']
+            phone = data['phone']
             verification_number = data['auth_number']
-            if verification_number == AuthSms.objects.get(phone_number=phone).auth_number:
-                if not User.objects.filter(phone=phone).exists():
+            if verification_number == AuthSms.objects.get(phone=phone).auth_number:
+                if not BillrunUser.objects.filter(phone=phone).exists(): # 해당핸드폰번호의 유저가 존재하지 않을 경우 유저 생성
                     # User.objects.create(phone=phone)
                     # 여기서 유저를 만들어야하는데 유저부터 수정하자!
                     return Response({'message': 'SUCCESS'}, status=200)
-                else:
-                    return Response({'message': 'REGISTERED_NUMBER'}, status=401)
-            return Response({'message': 'INVALID_NUMBER'}, status=401)
+                else: # 해당 핸드폰번호의 유저가 존재할 경우 -> 로그인
+                    ## Signin
+                    # signin(request._request)
+                    serializer = UserLoginSerializer(data=request.data)
+                    if not serializer.is_valid(raise_exception=True):
+                        return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
+                    if serializer.validated_data['phone'] == "None":
+                        return Response({"message": "fail"}, status=status.HTTP_200_OK)
+                    response = {
+                        'success': 'True',
+                        'token': serializer.data['token']
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                # return Response({'message': 'REGISTERED_NUMBER'}, status=401)
+            return Response({'message': 'INVALID_NUMBER'}, status=401) #인증번호 틀림
         except KeyError as e:
             return Response({'message': f'KEY_ERROR: {e}'}, status=400)
-
         except ValueError as e:
             return Response({'message': f'VALUE_ERROR: {e}'}, status=400)
 
@@ -170,15 +182,14 @@ class UserCreate(generics.CreateAPIView): #회원가입
 #{"phone":"01066278667"}
 #로그인
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def signin(request):
+    print(request)
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
         if not serializer.is_valid(raise_exception=True):
             return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
         if serializer.validated_data['phone'] == "None":
             return Response({"message": "fail"}, status=status.HTTP_200_OK)
-        
         response = {
             'success': 'True',
             'token': serializer.data['token']
