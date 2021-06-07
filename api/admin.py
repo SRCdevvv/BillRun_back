@@ -16,6 +16,7 @@ admin_site.register(Deal)
 admin_site.register(Favorite)
 admin_site.register(Notice)
 admin_site.register(AuthSms)
+admin_site.register(Terms)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (

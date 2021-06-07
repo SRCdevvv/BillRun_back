@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
@@ -194,6 +195,13 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     #     # Simplest possible answer: All admins are staff
     #     return self.is_active
 
+#약관
+class Terms(models.Model):
+    service = models.DateTimeField(null= True, default=None)
+    privacy = models.DateTimeField(null= True, default=None)
+    location = models.DateTimeField(null= True, default=None)
+    marketing = models.DateTimeField(null= True, default=None)
+    User = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
 
 class Product(models.Model):
     DEFAULT_PK=1
