@@ -71,6 +71,10 @@ class UserLoginSerializer(serializers.ModelSerializer): #로그인
         model = BillrunUser
         fields = ['phone', 'token']
 
+class TermsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Terms
+        fields = '__all__'
 
 class PPSerializer(serializers.ModelSerializer):
     class Meta:

@@ -15,6 +15,10 @@ urlpatterns = [
     path('signup/', UserCreate.as_view(), name="signup"),
     path('signin/', signin, name="signin"),
 
+    #약관
+    path('terms/', TermsAgreement.as_view(), name="terms"), #약관동의
+    path('terms/<int:user_id>', UserTermsDetail.as_view(), name="terms_detail"), #유저의 약관동의 내역/일시 확인
+
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
     path('lend_product_list/<int:product_id>', ProductDetail.as_view(), name="lend_product_detail"),

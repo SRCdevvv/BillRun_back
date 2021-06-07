@@ -200,8 +200,11 @@ class Terms(models.Model):
     service = models.DateTimeField(null= True, default=None)
     privacy = models.DateTimeField(null= True, default=None)
     location = models.DateTimeField(null= True, default=None)
-    marketing = models.DateTimeField(null= True, default=None)
-    User = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
+    marketing = models.DateTimeField(null= True, blank=True, default=None)
+    user = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return(f"{self.user}")
 
 class Product(models.Model):
     DEFAULT_PK=1

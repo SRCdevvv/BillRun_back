@@ -77,6 +77,42 @@ class SMSConfirm(APIView):
             return Response({'message': f'VALUE_ERROR: {e}'}, status=400)
 
 
+## Terms 약관동의 
+# class TermsList(APIView):
+#     def get(self, request):
+#         model = Terms.objects.all()
+#         # serializer = UserSerializer(model, many=True)
+#         serializer = TermsSerializer(model, context={'request': request}, many=True)
+#         return Response(serializer.data)
+
+class TermsAgreement(generics.CreateAPIView): #회원가입
+    queryset = Terms.objects.all()
+    serializer_class = TermsSerializer
+
+class UserTermsDetail(APIView): 
+    def get_user(self, user_id): #특정 유저 가져오기
+        try:
+            model = Terms.objects.get(user=user_id)
+            model.save()
+            return model
+        except Terms.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'Terms with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = TermsSerializer(self.get_user(user_id), context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'Terms with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = TermsSerializer(self.get_user(user_id), data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
 ### User
 class UserList(APIView): #전체 유저 리스트
     def get(self, request):
@@ -376,7 +412,6 @@ class ReviewList(APIView): #리뷰 목록 (이건 그냥 개발시 참고용!)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class DealReviewPost(APIView):
     def post(self, request): #거래 리뷰 작성
