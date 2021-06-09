@@ -1,10 +1,16 @@
+from django.core.checks import messages
+from django.core.validators import validate_email
+from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.utils.encoding import force_bytes
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from .serializers import *
 from .models import *
+from django.core.mail import EmailMessage
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -53,14 +59,7 @@ class SMSConfirm(APIView):
             verification_number = data['auth_number']
             if verification_number == AuthSms.objects.get(phone=phone).auth_number:
                 if not BillrunUser.objects.filter(phone=phone).exists(): # 해당핸드폰번호의 유저가 존재하지 않을 경우 유저 생성
-                    n = randint(1000,9999)
-                    nickname = "빌런" + str(n)
-                    user = BillrunUser.objects.create(phone=phone, nickname=nickname, is_active=False)
-                    # TODO 이메일 example@example.com
-                    # TODO 닉네임 중복에러시 닉네임 재생성
-                    # 이메일 인증으로 이동
-                    return user
-                    # return Response({'message': 'SUCCESS'}, status=200)
+                    return Response({'message': 'SUCCESS'}, status=200) # 번호인증 완료, 이메일인증 하면 됨
                 else: # 해당 핸드폰번호의 유저가 존재할 경우 -> 로그인
                     ## Signin
                     # signin(request._request)
@@ -121,9 +120,51 @@ class UserTermsDetail(APIView):
 
 
 ### Email 인증
-# class EmailConfirm(APIView):
-#     def post(self, request):
+class EmailConfirm(APIView):
+    def message(domain, uidb64, token):
+        return f"아래 링크를 클릭하면 회원가입이 완료됩니다. \n\nhttp://{domain}/users/{uidb64}/{token}\n\n감사합니다:) "
 
+    def post(self, request):
+        data = json.loads(request.body)
+        try:
+            validate_email(data['email'])
+            if BillrunUser.objects.filter(email=data['email']).exists():
+                return Response({"message":"EXISTS_EMAIL"}, status=400)
+            phone = request.data['phone']
+            email = request.data['email']
+            n = randint(1000,9999)
+            nickname = "빌런" + str(n)
+            # TODO 닉네임 중복에러시 닉네임 재생성
+            user = BillrunUser.objects.create(phone=phone, nickname=nickname, email=email, is_active=False)
+
+            current_site = request.get_full_path()
+            print(f"current site:{current_site}")
+
+            # TODO 인증링크 연결
+            # domain = current_site.domain
+            # print(f"domain:{domain}")
+
+            # uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            # token = account_activation_token.make_token(user)
+            # message_data = self.message(domain, uidb64, token)
+
+            title = '커뮤니티 인증 확인 이메일'
+            content = f'계정 활성화를 위한 메일입니다. 하단의 버튼을 눌러 회원가입을 완료해주세요.'
+            email = EmailMessage(title, content, to=[email])
+            email.send()
+            return Response({'message': 'SUCCESS'}, status=200)
+        
+        except KeyError as e:
+            return Response({'message': f'KEY_ERROR: {e}'}, status=400)
+        except TypeError as e:
+            return Response({'message': f'TYPE_ERROR: {e}'}, status=400)
+        except ValidationError as e:
+            return Response({'message': f'VALIDATION_ERROR: {e}'}, status=400)
+
+# TODO 계정활성화 함수
+# Email 인증 완료 -> 계정 활성화
+# class Activate(APIView):
+#     def get(self, re)
 
 
 ### User
