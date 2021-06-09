@@ -89,7 +89,7 @@ class AuthSms(models.Model):
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, phone, community, email, nickname, lat, lng):
+    def create_user(self, phone, community, email, lat, lng):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
         #TODO raise 오류 여러개 추가
@@ -103,7 +103,7 @@ class UserManager(BaseUserManager):
             phone = phone,
             community = community,
             email = self.normalize_email(email),
-            nickname = nickname + str(n),
+            nickname = str(n),
             lat = lat,
             lng = lng
         )
@@ -111,7 +111,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, email, nickname, password):
+    def create_superuser(self, phone, email, password):
         #TODO 관리자 수만큼 숫자따와서 이름 옆에 붙여주기. 닉네임은 굳이 생성할 필요가 없어서
         fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
@@ -119,7 +119,6 @@ class UserManager(BaseUserManager):
             phone = phone,
             community = 1,
             email = email,
-            nickname = nickname,
             lat = 0, 
             lng = 0,
         )
@@ -197,11 +196,11 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
 
 #약관
 class Terms(models.Model):
+    user = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
     service = models.DateTimeField(null= True, default=None)
     privacy = models.DateTimeField(null= True, default=None)
     location = models.DateTimeField(null= True, default=None)
     marketing = models.DateTimeField(null= True, blank=True, default=None)
-    user = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return(f"{self.user}")

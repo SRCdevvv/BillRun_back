@@ -53,9 +53,14 @@ class SMSConfirm(APIView):
             verification_number = data['auth_number']
             if verification_number == AuthSms.objects.get(phone=phone).auth_number:
                 if not BillrunUser.objects.filter(phone=phone).exists(): # 해당핸드폰번호의 유저가 존재하지 않을 경우 유저 생성
-                    # User.objects.create(phone=phone)
-                    # 여기서 유저를 만들어야하는데 유저부터 수정하자!
-                    return Response({'message': 'SUCCESS'}, status=200)
+                    n = randint(1000,9999)
+                    nickname = "빌런" + str(n)
+                    user = BillrunUser.objects.create(phone=phone, nickname=nickname, is_active=False)
+                    # TODO 이메일 example@example.com
+                    # TODO 닉네임 중복에러시 닉네임 재생성
+                    # 이메일 인증으로 이동
+                    return user
+                    # return Response({'message': 'SUCCESS'}, status=200)
                 else: # 해당 핸드폰번호의 유저가 존재할 경우 -> 로그인
                     ## Signin
                     # signin(request._request)
@@ -89,6 +94,7 @@ class TermsAgreement(generics.CreateAPIView): #회원가입
     queryset = Terms.objects.all()
     serializer_class = TermsSerializer
 
+
 class UserTermsDetail(APIView): 
     def get_user(self, user_id): #특정 유저 가져오기
         try:
@@ -112,6 +118,13 @@ class UserTermsDetail(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+### Email 인증
+# class EmailConfirm(APIView):
+#     def post(self, request):
+
+
 
 ### User
 class UserList(APIView): #전체 유저 리스트

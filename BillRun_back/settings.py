@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
-# from ..api.secret import DJ_SECRET
+from .my_settings import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ujy)dydlrzl_pya01zg4%fe&bji^u_9o$d9a3@m@$2!xem5atj'
-# SECRET_KEY = DJ_SECRET
+SECRET_KEY = DJ_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -199,9 +198,9 @@ JWT_AUTH = {
 }
 
 #Email
-EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
-EMAIL_PORT = '587' 			 # 서버 포트
-EMAIL_HOST_USER = 'sarangchecompany@gmail.com' 	 # 우리가 사용할 Gmail
-EMAIL_HOST_PASSWORD = 'src121212'		 # 우리가 사용할 Gmail pw
+EMAIL_HOST = EMAIL_HOST
+EMAIL_PORT = EMAIL_PORT	 # 서버 포트
+EMAIL_HOST_USER = EMAIL_HOST_USER 	 # 우리가 사용할 Gmail
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD		 # 우리가 사용할 Gmail pw
 EMAIL_USE_TLS = True			 # TLS 보안 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정

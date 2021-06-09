@@ -20,6 +20,7 @@ admin_site.register(Terms)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
+        'phone',
         'nickname',
         'email',
         'community',
@@ -27,6 +28,7 @@ class UserAdmin(admin.ModelAdmin):
     )
 
     list_display_links = (
+        'phone',
         'nickname',
         'email'
     )
