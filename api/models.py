@@ -92,17 +92,22 @@ class UserManager(BaseUserManager):
     def create_user(self, phone, community, email, lat, lng):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
-        #TODO raise 오류 여러개 추가
-        n = randint(1000,9999)
+        n = 8413
+        while True:
+            n = randint(1000,9999)
+            nickname = "빌런" + str(n)
+            try: # 닉네임 중복체크
+                BillrunUser.objects.get(nickname=nickname)
+            except: # BillrunUser.DoesNotExist
+                break
         fernet = Fernet(ENCODE_KEY)
-        #TODO 닉네임 랜덤생성으로 바꿀것
-        #TODO 중복체크추가할것
+        #TODO 핸드폰번호 암호화
         user = self.model(
             # phone = fernet.encrypt(phone.encode()),
             phone = phone,
             community = community,
             email = self.normalize_email(email),
-            nickname = "빌런" + str(n),
+            nickname = nickname,
             lat = lat,
             lng = lng
         )
@@ -135,7 +140,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         ('한양대', '한양대학교'),
         # ('가천대', '가천대학교'),
         # ('동국대', '동국대학교'),
-        ('관리자', '기타'),
+        ('관리자', '관리자'),
     )
 
     phone = models.CharField(max_length=11, unique=True)
