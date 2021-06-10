@@ -8,6 +8,9 @@ from django.conf import settings
 app_name='api'
 urlpatterns = [
     path('', main, name="main"),
+    path('main_user', main_user, name="main_user"),
+    path('main_prodeal', main_prodeal, name="main_prodeal"),
+
     path('user_list/', UserList.as_view(), name="user_list"),
     path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
 

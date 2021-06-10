@@ -29,11 +29,6 @@ urlpatterns = [
     path('admin/', admin_site.urls),
     path('api/', include('api.urls')),
 
-    #Auth
-    path('api-auth/', include('rest_framework.urls')),
-    # path('rest-auth/', include('rest_auth.urls')),
-    # path('rest-auth/signup/', include('rest_auth.registration.urls')),
-
     #jwt
     path('token/', obtain_jwt_token), #획득
     path('token/verify/', verify_jwt_token), #확인

@@ -1,0 +1,172 @@
+{% extends 'api/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container" style="margin-bottom:50px"> 
+        <br>
+        <h1 Align="center">😈 빌Run API 😈</h1>
+        <br>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'api:main' %}">전체보기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'api:main_user' %}"><b>회원</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'api:main_prodeal' %}">물품/거래</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin">Admin</a>
+            </li>
+        </ul>
+        <div class="list-group">
+        <div style="margin-top:10px; margin-bottom:20px">
+            <h2>Auth</h2>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:sms' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">SMS 전송</h5>
+                        </div>
+                        <p class="mb-1">/api/sms</p>
+                        <small>{"phone":"01012345678"} 입력 후 POST 방식으로 보내면 해당 번호로 인증 문자가 전송됩니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:sms_confirm' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">SMS 인증번호 확인</h5>
+                        </div>
+                        <p class="mb-1">/api/sms_confirm</p>
+                        <small>{"phone":"01012345678", "auth_number":7695} 입력 후 인증번호가 맞고,<br>유저가 존재하지 않을 경우 -> 회원가입. 이메일 인증으로 이동해주세요<br>
+                        유저가 존재할 경우 -> 로그인이 됩니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:email' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">이메일 인증</h5>
+                        </div>
+                        <p class="mb-1">/api/email</p>
+                        <small>phone, community, email 작성해서 POST 하면 회원이 생성됩니다.<br>이메일 인증까지 마치면 회원 활성화가 됩니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:terms' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">약관 동의</h5>
+                        </div>
+                        <p class="mb-1">/api/terms</p>
+                        <small>유저의 약관동의 일자를 받습니다. 유저 생성과 동시에 데이터 저장하면 될 것 같습니다!<br>유저 id를 뒤에 붙이면 해당 유저의 동의 일시가 나옵니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:signup' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">회원가입(개발용)</h5>
+                        </div>
+                        <p class="mb-1">/api/signup</p>
+                        <small>폼에 맞게 입력하고 POST하면 회원가입이 됩니당. is_active 꼭 체크해주세요!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:signin' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">로그인(개발용)</h5>
+                        </div>
+                        <p class="mb-1">/api/signin</p>
+                        <small>로그인 방법: {"phone":"01000000000"}</small>
+                    </a>
+                </div>
+            </div>
+            </div>
+            <h2>User</h2>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_list' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">사용자 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/user_list</p>
+                        <small>뒤에 User id 붙이면(/id) 해당 User의 정보가 나옵니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:favorite_list' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">사용자 좋아요 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/favorite/(int:user_id)</p>
+                        <small>뒤에 User id 붙이면(/id) 해당 User의 좋아요 목록이 나옵니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:deal_review' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저에 대한 리뷰 작성 페이지</h5>
+                        </div>
+                        <p class="mb-1">/api/deal_review</p>
+                        <small>실제로는 '거래'에 대한 리뷰입니다.<br>거래에 참여한 두 명의 유저만 작성할 수 있도록 추가개발할 예정입니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_review_detail' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저에 대한 리뷰 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/review/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_lend_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌려드림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_rent_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:lend_deal_list' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌려드림 거래 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_deal_list/(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:rent_deal_list' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌림 거래 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/rent_deal_list/(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

@@ -28,6 +28,12 @@ import json
 def main(request):
     return render(request, 'api/main.html')
 
+def main_user(request):
+    return render(request, 'api/main_user.html')
+
+def main_prodeal(request):
+    return render(request, 'api/main_prodeal.html')
+
 ### Auth
 # def	make_signature():
 # 	timestamp = int(time.time() * 1000)
@@ -140,20 +146,15 @@ class EmailConfirm(APIView):
             phone = request.data['phone']
             community = request.data['community']
             email = request.data['email']
-            # n = randint(1000,9999)
-            # nickname = "빌런" + str(n)
-            # TODO 닉네임 중복에러시 닉네임 재생성
             user = BillrunUser.objects.create_user(
                 phone=phone, 
                 community = community,
                 email = email,
-                # nickname = validated_data['nickname'],
                 lat = 0,
                 lng = 0
             )
-            # TODO 인증링크 연결
-            domain = request.build_absolute_uri()
 
+            domain = request.build_absolute_uri()
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             token = account_activation_token.make_token(user)
             message_data = message(domain, uidb64, token)
