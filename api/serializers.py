@@ -31,7 +31,7 @@ class UserCreateSerializer(serializers.ModelSerializer): #회원가입
             phone = validated_data['phone'],
             community = validated_data['community'],
             email = validated_data['email'],
-            nickname = validated_data['nickname'],
+            # nickname = validated_data['nickname'],
             lat = validated_data['lat'],
             lng = validated_data['lng']
         )
@@ -39,7 +39,7 @@ class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     class Meta:
         model = BillrunUser
         # fields = '__all__'
-        fields = ['phone', 'community', 'email', 'nickname', 'lat', 'lng']
+        fields = ['phone', 'community', 'email', 'lat', 'lng', 'is_active']
 
 
 class UserLoginSerializer(serializers.ModelSerializer): #로그인

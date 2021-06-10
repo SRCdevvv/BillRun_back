@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     #apps
     'api',
+    'six',
     # 'account',
     
     # 'account.apps.AccountConfig',

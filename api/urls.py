@@ -72,4 +72,6 @@ urlpatterns = [
 
     #email인증
     path('email', EmailConfirm.as_view(), name="email"),
+    path('email/users/<str:uidb64>/<str:token>', activate),
+    path('user_active', activate_success, name="user_active"),
 ] 

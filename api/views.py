@@ -3,7 +3,7 @@ from django.core.validators import validate_email
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_text
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +11,13 @@ from rest_framework import status, generics
 from .serializers import *
 from .models import *
 from django.core.mail import EmailMessage
+# from django.contrib.sites.shortcuts import get_current_site #example.com
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from .tokens import account_activation_token
+from django.http import HttpResponse
+from .auth_backend import PasswordlessAuthBackend
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -120,10 +127,10 @@ class UserTermsDetail(APIView):
 
 
 ### Email 인증
-class EmailConfirm(APIView):
-    def message(domain, uidb64, token):
-        return f"아래 링크를 클릭하면 회원가입이 완료됩니다. \n\nhttp://{domain}/users/{uidb64}/{token}\n\n감사합니다:) "
+def message(domain, uidb64, token):
+    return f"아래 링크를 클릭하면 빌RUN 회원가입이 완료됩니다. \n{domain}/users/{uidb64}/{token}\n\n감사합니다:) "
 
+class EmailConfirm(APIView):
     def post(self, request):
         data = json.loads(request.body)
         try:
@@ -131,26 +138,28 @@ class EmailConfirm(APIView):
             if BillrunUser.objects.filter(email=data['email']).exists():
                 return Response({"message":"EXISTS_EMAIL"}, status=400)
             phone = request.data['phone']
+            community = request.data['community']
             email = request.data['email']
-            n = randint(1000,9999)
-            nickname = "빌런" + str(n)
+            # n = randint(1000,9999)
+            # nickname = "빌런" + str(n)
             # TODO 닉네임 중복에러시 닉네임 재생성
-            user = BillrunUser.objects.create(phone=phone, nickname=nickname, email=email, is_active=False)
-
-            current_site = request.get_full_path()
-            print(f"current site:{current_site}")
-
+            user = BillrunUser.objects.create_user(
+                phone=phone, 
+                community = community,
+                email = email,
+                # nickname = validated_data['nickname'],
+                lat = 0,
+                lng = 0
+            )
             # TODO 인증링크 연결
-            # domain = current_site.domain
-            # print(f"domain:{domain}")
+            domain = request.build_absolute_uri()
 
-            # uidb64 = urlsafe_base64_encode(force_bytes(user.id))
-            # token = account_activation_token.make_token(user)
-            # message_data = self.message(domain, uidb64, token)
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token = account_activation_token.make_token(user)
+            message_data = message(domain, uidb64, token)
 
-            title = '커뮤니티 인증 확인 이메일'
-            content = f'계정 활성화를 위한 메일입니다. 하단의 버튼을 눌러 회원가입을 완료해주세요.'
-            email = EmailMessage(title, content, to=[email])
+            title = '빌RUN 커뮤니티 인증 확인 이메일'
+            email = EmailMessage(title, message_data, to=[email])
             email.send()
             return Response({'message': 'SUCCESS'}, status=200)
         
@@ -161,11 +170,30 @@ class EmailConfirm(APIView):
         except ValidationError as e:
             return Response({'message': f'VALIDATION_ERROR: {e}'}, status=400)
 
-# TODO 계정활성화 함수
 # Email 인증 완료 -> 계정 활성화
-# class Activate(APIView):
-#     def get(self, re)
+def activate(request, uidb64, token):
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    user = BillrunUser.objects.get(pk=uid)
 
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        user = PasswordlessAuthBackend.authenticate(phone=user.phone)
+        try:
+            payload = JWT_PAYLOAD_HANDLER(user)
+            jwt_token = JWT_ENCODE_HANDLER(payload)
+            update_last_login(None, user)
+        except BillrunUser.DoesNotExist:
+            raise serializers.ValidationError(
+                'User with given phone number does not exists'
+            )
+        # auth.login(request, user)
+        return redirect('api:user_active')
+    else:
+        return HttpResponse('비정상적인 접근입니다.')
+
+def activate_success(request):
+    return render(request, 'api/user_active.html')
 
 ### User
 class UserList(APIView): #전체 유저 리스트

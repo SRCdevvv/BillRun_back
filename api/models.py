@@ -94,7 +94,6 @@ class UserManager(BaseUserManager):
             raise ValueError('핸드폰 번호를 입력해주세요.')
         #TODO raise 오류 여러개 추가
         n = randint(1000,9999)
-        # nick = "빌런" + n
         fernet = Fernet(ENCODE_KEY)
         #TODO 닉네임 랜덤생성으로 바꿀것
         #TODO 중복체크추가할것
@@ -103,7 +102,7 @@ class UserManager(BaseUserManager):
             phone = phone,
             community = community,
             email = self.normalize_email(email),
-            nickname = str(n),
+            nickname = "빌런" + str(n),
             lat = lat,
             lng = lng
         )
@@ -111,8 +110,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, email, password):
-        #TODO 관리자 수만큼 숫자따와서 이름 옆에 붙여주기. 닉네임은 굳이 생성할 필요가 없어서
+    def create_superuser(self, phone, email, nickname, password):
         fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
             # phone = fernet.encrypt(bytes(phone, 'utf-8')),
@@ -122,6 +120,7 @@ class UserManager(BaseUserManager):
             lat = 0, 
             lng = 0,
         )
+        user.nickname = nickname
         user.set_password(password)
         user.is_active = True
         user.is_admin = True
@@ -163,7 +162,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
-    is_active = models.BooleanField(default=True)    #TODO
+    is_active = models.BooleanField(default=False)    #TODO
     is_admin = models.BooleanField(default=False)    
     is_superuser = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False)
