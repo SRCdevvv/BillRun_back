@@ -18,9 +18,11 @@ import json
 profile_default = 'user/default_user.png'
 photo_default = 'photo/no_image.png'
 
+fernet = Fernet(ENCODE_KEY)
+
 # Auth
 class AuthSms(models.Model):
-    phone = models.CharField(verbose_name='휴대폰 번호', primary_key=True, max_length=11)
+    phone = models.CharField(verbose_name='휴대폰 번호', max_length=110, unique=True)
     auth_number = models.IntegerField(verbose_name='인증 번호')
 
     # class Meta:
@@ -33,6 +35,9 @@ class AuthSms(models.Model):
         print("전송 완료")
 
     def send_sms(self):
+        phone = self.phone
+        phone_decrypted = fernet.decrypt(phone)
+
         timestamp = str(int(time.time() * 1000))
         secret_key = bytes(SECRET_KEY, 'UTF-8')
         url = "https://sens.apigw.ntruss.com"
@@ -57,7 +62,7 @@ class AuthSms(models.Model):
             'from': PHONE,
             'content': '인증 번호 [{}]를 입력해주세요.'.format(self.auth_number),
             'messages':[{
-                    'to':self.phone
+                    'to':phone_decrypted
                 }]
         }
         requests.post(apiUrl, headers=headers, data=json.dumps(body))
@@ -143,7 +148,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         ('관리자', '관리자'),
     )
 
-    phone = models.CharField(max_length=11, unique=True)
+    phone = models.CharField(max_length=110, unique=True)
     community = models.CharField(max_length=30, choices=Group)
     email = models.EmailField(max_length=254, unique=True)
     nickname = models.CharField(max_length=20, unique=True)
