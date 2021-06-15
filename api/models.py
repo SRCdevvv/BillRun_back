@@ -329,14 +329,15 @@ class Deal(models.Model):
 class DealReview(models.Model):
     DEFAULT_PK=1
     SCOREPROP = (
+        ('X', 'X'),
         ('상', '상'),
         ('중', '중'),
         ('하', '하'),
     )
     q1 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
     q2 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
-    q3 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
-    q4 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
+    q3 = models.CharField(max_length=30, default=1, null=True, choices=SCOREPROP)
+    q4 = models.CharField(max_length=30, default=1, null=True, choices=SCOREPROP)
     deal = models.ForeignKey(Deal, null=True, on_delete=models.CASCADE) #거래가 사라지면 거래리뷰도 사라진다. (필요X)
     user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL) #리뷰작성자
     created_at = models.DateTimeField(auto_now_add = True, null= True)
@@ -345,7 +346,7 @@ class DealReview(models.Model):
     # def __str__(self):
     #     return f"{self.user.nickname} - {self.deal}"
     def __str__(self):
-        return f"{self.deal}"
+        return f"{self.deal} - {self.user.nickname}"
 
 class ProductReview(models.Model):
     DEFAULT_PK=1
@@ -359,7 +360,7 @@ class ProductReview(models.Model):
     # def __str__(self):
     #     return f"{self.user.nickname} - {self.deal.product.name}"
     def __str__(self):
-        return f"{self.deal.product.name}"
+        return f"{self.deal.product.name} - {self.user.nickname}"
 
 class Favorite(models.Model):
     DEFAULT_PK=1
@@ -368,8 +369,8 @@ class Favorite(models.Model):
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
-    # def __str__(self):
-    #     return f"{self.user.nickname}의 찜 목록"
+    def __str__(self):
+        return f"{self.user.nickname}의 찜 목록"
 
 class Notice(models.Model):
     DEFAULT_PK=1

@@ -17,6 +17,7 @@ urlpatterns = [
     #Auth
     path('signup/', UserCreate.as_view(), name="signup"),
     path('signin/', signin, name="signin"),
+    # path('logout/', LogoutView.as_view(), name="logout"),
 
     #약관
     path('terms/', TermsAgreement.as_view(), name="terms"), #약관동의
@@ -51,10 +52,10 @@ urlpatterns = [
     path('rent_deal_list/<int:user_id>', RentDealList.as_view(), name="rent_deal_list"),
 
     #리뷰
-    path('review/', ReviewList.as_view(), name="review_list"),
+    # path('review/', ReviewList.as_view(), name="review_list"),
     path('pro_review', ProductReviewPost.as_view(), name="pro_review"),
     path('deal_review', DealReviewPost.as_view(), name="deal_review"),
-    path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"), #이전리뷰
+    # path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"), #이전리뷰
     path('review/pro_id=<int:product_id>', ProductReviewDetail.as_view(), name="pro_review_detail"), #물품리뷰
     path('review/user_id=<int:user_id>', UserReviewDetail.as_view(), name="user_review_detail"), #유저리뷰
 
