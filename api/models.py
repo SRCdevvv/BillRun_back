@@ -35,10 +35,10 @@ class AuthSms(models.Model):
         print("전송 완료")
 
     def send_sms(self):
-        phone = self.phone
-        phone_decrypted = fernet.decrypt(phone)
+        # phone = self.phone
+        # phone_decrypted = fernet.decrypt(phone)
 
-        timestamp = str(int(time.time() * 1000))
+        timestamp = str(int(time.time() * 1000)) #시간제한 5분
         secret_key = bytes(SECRET_KEY, 'UTF-8')
         url = "https://sens.apigw.ntruss.com"
         requestUrl = "/sms/v2/services/"
@@ -60,9 +60,9 @@ class AuthSms(models.Model):
         body = {
             'type': 'SMS',
             'from': PHONE,
-            'content': '인증 번호 [{}]를 입력해주세요.'.format(self.auth_number),
+            'content': '[빌RUN] 인증 번호 [{}]를 입력해주세요.'.format(self.auth_number),
             'messages':[{
-                    'to':phone_decrypted
+                    'to':self.phone
                 }]
         }
         requests.post(apiUrl, headers=headers, data=json.dumps(body))

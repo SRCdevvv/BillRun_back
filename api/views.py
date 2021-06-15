@@ -1,6 +1,6 @@
-from django.core.checks import messages
+# from django.core.checks import messages
 from django.core.validators import validate_email
-from django.http.response import JsonResponse
+# from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.utils.encoding import force_bytes, force_text
@@ -12,17 +12,45 @@ from .serializers import *
 from .models import *
 from django.core.mail import EmailMessage
 # from django.contrib.sites.shortcuts import get_current_site #example.com
-from django.template.loader import render_to_string
+# from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.http import HttpResponse
 from .auth_backend import PasswordlessAuthBackend
-
+from cryptography.fernet import Fernet
+# import bcrypt
+import base64
+from .secret import ENCODE_KEY
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-
+# from rest_framework.permissions import AllowAny
 import json
+
+fernet = Fernet(ENCODE_KEY)
+
+# # 핸드폰번호 암호화
+# def encrypt_phone(phone):
+#     phone_encrypted = fernet.encrypt(phone.encode())
+#     # print(phone_encrypted)
+#     # phone_encrypted = base64.b64encode(phone_encrypted)
+#     # print(phone_encrypted)
+#     # phone_encrypted = phone_encrypted.decode('ascii')
+
+#     # print(phone_encrypted)
+
+#     phone_encrypted = phone_encrypted.decode('utf8') #byte를 str로
+#     # TypeError: token must be bytes
+#     return phone_encrypted
+#     # TypeError: Object of type bytes is not JSON serializable
+
+# # 핸드폰번호 복호화
+# def decrypt_phone(phone):
+#     print(phone)
+#     phone = phone.encode()
+#     print(phone)
+#     phone_decrypted = fernet.decrypt(phone)
+#     print(phone_decrypted)
+#     return phone_decrypted
 
 # main page
 def main(request):
@@ -55,10 +83,10 @@ class SMSVerification(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            AuthSms.objects.update_or_create(phone=data['phone'])
-            # sms = AuthSms.objects.get(phone_number=data['phone_number'])
-            # AuthSms.send_sms(sms)
-            # AuthSms.test(sms)
+            phone = data['phone']
+            # phone = encrypt_phone(data['phone'])
+            AuthSms.objects.update_or_create(phone=phone)
+            # AuthSms.objects.update_or_create(phone=data['phone'])
             return Response({'message': 'OK', 'status': Response.status_code})
         except KeyError:
             return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -69,6 +97,7 @@ class SMSConfirm(APIView):
         try:
             data = json.loads(request.body)
             phone = data['phone']
+            # phone = encrypt_phone(data['phone'])
             verification_number = data['auth_number']
             if verification_number == AuthSms.objects.get(phone=phone).auth_number:
                 if not BillrunUser.objects.filter(phone=phone).exists(): # 해당핸드폰번호의 유저가 존재하지 않을 경우 유저 생성
