@@ -134,10 +134,10 @@ class DDSerializer(serializers.ModelSerializer):
         fields = ['product']
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'
+# class ReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Review
+#         fields = '__all__'
 
 class DealReviewSerializer(serializers.ModelSerializer):
     # user = UUSerializer(read_only=True)
@@ -145,7 +145,7 @@ class DealReviewSerializer(serializers.ModelSerializer):
         model = DealReview
         # fields = '__all__'
         # fields = ('q1', 'q2', 'q3', 'user', 'created_at')
-        fields = ('q1', 'q2', 'q3', 'created_at')
+        fields = ('q1', 'q2', 'q3', 'q4', 'created_at')
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     # user = UUSerializer(read_only=True)

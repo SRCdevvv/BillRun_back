@@ -15,7 +15,7 @@ class AuthSmsAdmin(admin.ModelAdmin):
     )
 
 admin_site.register(Product, ProductAdmin)
-admin_site.register(Review)
+# admin_site.register(Review)
 admin_site.register(DealReview)
 admin_site.register(ProductReview)
 admin_site.register(Deal)

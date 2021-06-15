@@ -20,7 +20,7 @@ photo_default = 'photo/no_image.png'
 
 fernet = Fernet(ENCODE_KEY)
 
-# Auth
+### Auth
 class AuthSms(models.Model):
     phone = models.CharField(verbose_name='휴대폰 번호', max_length=110, unique=True)
     auth_number = models.IntegerField(verbose_name='인증 번호')
@@ -68,7 +68,6 @@ class AuthSms(models.Model):
         requests.post(apiUrl, headers=headers, data=json.dumps(body))
 
 
-
 # class User(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 #     nickname = models.CharField(max_length=10, default='', unique=True)
@@ -91,6 +90,7 @@ class AuthSms(models.Model):
 #         return f"{self.id}) {self.nickname}({self.user.username})"
 
 
+### User
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -137,7 +137,6 @@ class UserManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
-
 
 class BillrunUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
@@ -203,7 +202,8 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     #     # Simplest possible answer: All admins are staff
     #     return self.is_active
 
-#약관
+
+### Terms 약관
 class Terms(models.Model):
     user = models.OneToOneField(BillrunUser, on_delete=models.CASCADE)
     service = models.DateTimeField(null= True, default=None)
@@ -213,6 +213,7 @@ class Terms(models.Model):
 
     def __str__(self):
         return(f"{self.user}")
+
 
 class Product(models.Model):
     DEFAULT_PK=1
@@ -243,7 +244,7 @@ class Product(models.Model):
     place_option = models.BooleanField(default=True) #안심거래옵션
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL)
     lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #위도
     lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #경도
     location = models.CharField(max_length=50, default='', null=True, blank=True)
@@ -290,8 +291,8 @@ class Deal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     datentime = models.DateTimeField(auto_now=False, blank=False, null=False)
     period = models.IntegerField()
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(BillrunUser, null=True,  default=DEFAULT_PK, on_delete=models.SET_NULL)
+    product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
 
     # def __str__(self):
     #     if self.product.lend:
@@ -305,25 +306,25 @@ class Deal(models.Model):
             return f"{self.id}) [빌림]{self.product.name}"
 
 #Review
-class Review(models.Model):
-    DEFAULT_PK=1
-    post = models.TextField()
-    product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add = True, null= True)
-    updated_at = models.DateTimeField(auto_now = True, null= True)
+# class Review(models.Model):
+#     DEFAULT_PK=1
+#     post = models.TextField()
+#     product_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+#     user_score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+#     deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
+#     # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+#     product = models.ForeignKey(Product, default=DEFAULT_PK, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add = True, null= True)
+#     updated_at = models.DateTimeField(auto_now = True, null= True)
 
-    def __str__(self):
-        return f"{self.deal.id}) {self.product.name} - {self.user.nickname}"
+#     def __str__(self):
+#         return f"{self.deal.id}) {self.product.name} - {self.user.nickname}"
 
-    def upload_review(self, filename):
-        path = 'review/{}'.format(filename)
-        return path
+#     def upload_review(self, filename):
+#         path = 'review/{}'.format(filename)
+#         return path
 
-    photo = models.ImageField(upload_to=upload_review, null=True, blank=True)
+#     photo = models.ImageField(upload_to=upload_review, null=True, blank=True)
 
 class DealReview(models.Model):
     DEFAULT_PK=1
@@ -335,8 +336,9 @@ class DealReview(models.Model):
     q1 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
     q2 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
     q3 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
-    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE) #리뷰작성자
+    q4 = models.CharField(max_length=30, default=1, choices=SCOREPROP)
+    deal = models.ForeignKey(Deal, null=True, on_delete=models.CASCADE) #거래가 사라지면 거래리뷰도 사라진다. (필요X)
+    user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL) #리뷰작성자
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
@@ -346,11 +348,11 @@ class DealReview(models.Model):
         return f"{self.deal}"
 
 class ProductReview(models.Model):
-    DEFAULT_PK=3
+    DEFAULT_PK=1
     score = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5)])
     content = models.TextField()
-    deal = models.ForeignKey(Deal, default=DEFAULT_PK, on_delete=models.CASCADE)
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE)
+    user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL) #유저가 삭제되어도 물품 리뷰는 남아있다.
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
 
@@ -361,7 +363,7 @@ class ProductReview(models.Model):
 
 class Favorite(models.Model):
     DEFAULT_PK=1
-    # user = models.ForeignKey(User, default=DEFAULT_PK, on_delete=models.CASCADE)
+    user = models.ForeignKey(BillrunUser, default=DEFAULT_PK, on_delete=models.CASCADE)
     product = models.ManyToManyField(Product, blank=True)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
@@ -370,6 +372,8 @@ class Favorite(models.Model):
     #     return f"{self.user.nickname}의 찜 목록"
 
 class Notice(models.Model):
+    DEFAULT_PK=1
+    user = models.ForeignKey(BillrunUser, default=DEFAULT_PK, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=50)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add = True, null= True)

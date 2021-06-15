@@ -69,20 +69,20 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
             ],
         ),
-        migrations.CreateModel(
-            name='Review',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('post', models.TextField()),
-                ('product_score', models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('user_score', models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('photo', models.ImageField(blank=True, null=True, upload_to=api.models.Review.upload_review)),
-                ('deal', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='api.deal')),
-                ('product', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='api.product')),
-            ],
-        ),
+        # migrations.CreateModel(
+        #     name='Review',
+        #     fields=[
+        #         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('post', models.TextField()),
+        #         ('product_score', models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
+        #         ('user_score', models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
+        #         ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
+        #         ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+        #         ('photo', models.ImageField(blank=True, null=True, upload_to=api.models.Review.upload_review)),
+        #         ('deal', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='api.deal')),
+        #         ('product', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='api.product')),
+        #     ],
+        # ),
         migrations.CreateModel(
             name='ProductReview',
             fields=[
