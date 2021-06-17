@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     #drf
     'rest_framework',
     'rest_framework.authtoken',
+    # 'rest_framework_simplejwt.token_blacklist',
     
     #apps
     'api',
@@ -189,6 +190,13 @@ JWT_AUTH = {
     'JWT_PAYLOAD_HANDLER':
         'rest_framework_jwt.utils.jwt_payload_handler',
 }
+
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=2),
+#     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
+#     'ROTATE_REFRESH_TOKENS': False,
+#     'BLACKLIST_AFTER_ROTATION': True,
+# }
 
 #Email
 EMAIL_HOST = EMAIL_HOST
