@@ -1,0 +1,98 @@
+{% extends 'api/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container" style="margin-bottom:50px"> 
+        <br>
+        <h1 Align="center">😈 빌Run API 😈</h1>
+        <br>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'api:main' %}">전체보기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'api:main_user' %}">회원</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'api:main_prodeal' %}"><b>물품/거래</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin">Admin</a>
+            </li>
+        </ul>
+        <div class="list-group">
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:lend_product_list' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">빌려드림 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list</p>
+                        <small>뒤에 Product id 붙이면(/id) 해당 상품의 정보가 나옵니다.</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:rent_product_list' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">빌림 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/rent_product_list</p>
+                        <small>뒤에 Product id 붙이면(/id) 해당 상품의 정보가 나옵니다.</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:pro_review' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 물품에 대한 리뷰 작성 페이지</h5>
+                        </div>
+                        <p class="mb-1">/api/pro_review</p>
+                        <small>마찬가지로 '거래'에 대한 리뷰입니다. 물품은 거래 안의 속성으로 가져옵니다.<br>POST방식으로 작성하면 리뷰가 등록됩니다.<br> </small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:pro_review_detail' product_id=4 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 물품에 대한 리뷰 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/review/pro_id=(int:product_id)</p>
+                        <small>예시로 product id=4인 '타로밀크티향수' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_lend_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌려드림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_rent_product' user_id=1 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저의 빌림 물품 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/lend_product_list/user_id=(int:user_id)</p>
+                        <small>예시로 user id=1인 '배가고프군그래' 값을 넣어두었습니다!</small>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:deal_list' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">거래 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/deal_list</p>
+                        <small>뒤에 Deal id 붙이면(/id) 해당 Deal의 정보가 나옵니다.</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

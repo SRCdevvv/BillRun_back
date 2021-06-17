@@ -1,5 +1,3 @@
-from django.db.models import fields
-from django.http import request
 from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth.models import User as UU, update_last_login
@@ -18,13 +16,14 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 #         # fields = '__all__'
 #         fields = ('id', 'nickname')
 
-# class UserSerializer(serializers.ModelSerializer):
-#     place = serializers.CharField(required=False)
-#     username = serializers.ReadOnlyField(source='user.username')
+class UserSerializer(serializers.ModelSerializer):
+    # place = serializers.CharField(required=False)
+    # username = serializers.ReadOnlyField(source='user.username')
 
-#     class Meta:
-#         model = User
-#         fields = '__all__'
+    class Meta:
+        model = BillrunUser
+        # fields = '__all__'
+        fields = ['id', 'nickname', 'email', 'community', 'lat', 'lng', 'location', 'money', 'score', 'profile', 'is_active']
 
 class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     def create(self, validated_data):
@@ -32,7 +31,7 @@ class UserCreateSerializer(serializers.ModelSerializer): #회원가입
             phone = validated_data['phone'],
             community = validated_data['community'],
             email = validated_data['email'],
-            nickname = validated_data['nickname'],
+            # nickname = validated_data['nickname'],
             lat = validated_data['lat'],
             lng = validated_data['lng']
         )
@@ -40,7 +39,7 @@ class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     class Meta:
         model = BillrunUser
         # fields = '__all__'
-        fields = ['phone', 'community', 'email', 'nickname', 'lat', 'lng']
+        fields = ['phone', 'community', 'email', 'lat', 'lng', 'is_active']
 
 
 class UserLoginSerializer(serializers.ModelSerializer): #로그인
@@ -72,6 +71,10 @@ class UserLoginSerializer(serializers.ModelSerializer): #로그인
         model = BillrunUser
         fields = ['phone', 'token']
 
+class TermsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Terms
+        fields = '__all__'
 
 class PPSerializer(serializers.ModelSerializer):
     class Meta:
@@ -93,6 +96,8 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.CharField(required=False)
     price_prop = serializers.CharField(required=False)
     # user = UserSerializer(read_only=True)
+    lat = serializers.IntegerField(required=False)
+    lng = serializers.IntegerField(required=False)
     photos = serializers.SerializerMethodField()
 
     def get_photos(self, obj):
@@ -129,10 +134,10 @@ class DDSerializer(serializers.ModelSerializer):
         fields = ['product']
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'
+# class ReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Review
+#         fields = '__all__'
 
 class DealReviewSerializer(serializers.ModelSerializer):
     # user = UUSerializer(read_only=True)
@@ -140,7 +145,7 @@ class DealReviewSerializer(serializers.ModelSerializer):
         model = DealReview
         # fields = '__all__'
         # fields = ('q1', 'q2', 'q3', 'user', 'created_at')
-        fields = ('q1', 'q2', 'q3', 'created_at')
+        fields = ('q1', 'q2', 'q3', 'q4', 'created_at')
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     # user = UUSerializer(read_only=True)

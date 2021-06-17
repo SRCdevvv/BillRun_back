@@ -8,12 +8,20 @@ from django.conf import settings
 app_name='api'
 urlpatterns = [
     path('', main, name="main"),
-    # path('user_list/', UserList.as_view(), name="user_list"),
-    # path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
+    path('main_user', main_user, name="main_user"),
+    path('main_prodeal', main_prodeal, name="main_prodeal"),
+
+    path('user_list/', UserList.as_view(), name="user_list"),
+    path('user_list/<int:user_id>', UserDetail.as_view(), name="user_detail"),
 
     #Auth
     path('signup/', UserCreate.as_view(), name="signup"),
     path('signin/', signin, name="signin"),
+    # path('logout/', LogoutView.as_view(), name="logout"),
+
+    #약관
+    path('terms/', TermsAgreement.as_view(), name="terms"), #약관동의
+    path('terms/<int:user_id>', UserTermsDetail.as_view(), name="terms_detail"), #유저의 약관동의 내역/일시 확인
 
     #빌려드림
     path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
@@ -44,10 +52,10 @@ urlpatterns = [
     path('rent_deal_list/<int:user_id>', RentDealList.as_view(), name="rent_deal_list"),
 
     #리뷰
-    path('review/', ReviewList.as_view(), name="review_list"),
+    # path('review/', ReviewList.as_view(), name="review_list"),
     path('pro_review', ProductReviewPost.as_view(), name="pro_review"),
     path('deal_review', DealReviewPost.as_view(), name="deal_review"),
-    path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"), #이전리뷰
+    # path('review/<int:product_id>', ReviewDetail.as_view(), name="review_detail"), #이전리뷰
     path('review/pro_id=<int:product_id>', ProductReviewDetail.as_view(), name="pro_review_detail"), #물품리뷰
     path('review/user_id=<int:user_id>', UserReviewDetail.as_view(), name="user_review_detail"), #유저리뷰
 
@@ -62,7 +70,12 @@ urlpatterns = [
     path('notice/', NoticeList.as_view(), name="notice"),
     path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
 
-    #api시험
+    #sms인증
     path('sms', SMSVerification.as_view(), name="sms"),
     path('sms_confirm', SMSConfirm.as_view(), name="sms_confirm"),
+
+    #email인증
+    path('email', EmailConfirm.as_view(), name="email"),
+    path('email/users/<str:uidb64>/<str:token>', activate),
+    path('user_active', activate_success, name="user_active"),
 ] 

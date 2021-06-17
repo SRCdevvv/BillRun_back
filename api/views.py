@@ -1,19 +1,67 @@
+# from django.core.checks import messages
+from django.core.validators import validate_email
+# from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.utils.encoding import force_bytes, force_text
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from .serializers import *
 from .models import *
-
+from django.core.mail import EmailMessage
+# from django.contrib.sites.shortcuts import get_current_site #example.com
+# from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from .tokens import account_activation_token
+from django.http import HttpResponse
+from .auth_backend import PasswordlessAuthBackend
+from cryptography.fernet import Fernet
+# import bcrypt
+import base64
+from .secret import ENCODE_KEY
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-
+# from rest_framework_simplejwt.tokens import RefreshToken
+# from rest_framework.permissions import AllowAny
 import json
+
+fernet = Fernet(ENCODE_KEY)
+
+# # 핸드폰번호 암호화
+# def encrypt_phone(phone):
+#     phone_encrypted = fernet.encrypt(phone.encode())
+#     # print(phone_encrypted)
+#     # phone_encrypted = base64.b64encode(phone_encrypted)
+#     # print(phone_encrypted)
+#     # phone_encrypted = phone_encrypted.decode('ascii')
+
+#     # print(phone_encrypted)
+
+#     phone_encrypted = phone_encrypted.decode('utf8') #byte를 str로
+#     # TypeError: token must be bytes
+#     return phone_encrypted
+#     # TypeError: Object of type bytes is not JSON serializable
+
+# # 핸드폰번호 복호화
+# def decrypt_phone(phone):
+#     print(phone)
+#     phone = phone.encode()
+#     print(phone)
+#     phone_decrypted = fernet.decrypt(phone)
+#     print(phone_decrypted)
+#     return phone_decrypted
 
 # main page
 def main(request):
     return render(request, 'api/main.html')
+
+def main_user(request):
+    return render(request, 'api/main_user.html')
+
+def main_prodeal(request):
+    return render(request, 'api/main_prodeal.html')
 
 ### Auth
 # def	make_signature():
@@ -36,49 +84,176 @@ class SMSVerification(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            AuthSms.objects.update_or_create(phone_number=data['phone_number'])
-            # sms = AuthSms.objects.get(phone_number=data['phone_number'])
-            # AuthSms.send_sms(sms)
-            # AuthSms.test(sms)
+            phone = data['phone']
+            # phone = encrypt_phone(data['phone'])
+            AuthSms.objects.update_or_create(phone=phone)
+            # AuthSms.objects.update_or_create(phone=data['phone'])
             return Response({'message': 'OK', 'status': Response.status_code})
         except KeyError:
             return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SMSConfirm(APIView):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            phone = data['phone_number']
+            phone = data['phone']
+            # phone = encrypt_phone(data['phone'])
             verification_number = data['auth_number']
-            if verification_number == AuthSms.objects.get(phone_number=phone).auth_number:
-                if not User.objects.filter(phone=phone).exists():
-                    # User.objects.create(phone=phone)
-                    # 여기서 유저를 만들어야하는데 유저부터 수정하자!
-                    return Response({'message': 'SUCCESS'}, status=200)
-                else:
-                    return Response({'message': 'REGISTERED_NUMBER'}, status=401)
-            return Response({'message': 'INVALID_NUMBER'}, status=401)
+            if verification_number == AuthSms.objects.get(phone=phone).auth_number:
+                if not BillrunUser.objects.filter(phone=phone).exists(): # 해당핸드폰번호의 유저가 존재하지 않을 경우 유저 생성
+                    return Response({'message': 'SUCCESS'}, status=200) # 번호인증 완료, 이메일인증 하면 됨
+                else: # 해당 핸드폰번호의 유저가 존재할 경우 -> 로그인
+                    ## Signin
+                    # signin(request._request)
+                    serializer = UserLoginSerializer(data=request.data)
+                    if not serializer.is_valid(raise_exception=True):
+                        return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
+                    if serializer.validated_data['phone'] == "None":
+                        return Response({"message": "fail"}, status=status.HTTP_200_OK)
+                    response = {
+                        'success': 'True',
+                        'token': serializer.data['token']
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                # return Response({'message': 'REGISTERED_NUMBER'}, status=401)
+            return Response({'message': '인증번호 오류'}, status=401) #인증번호 틀림
         except KeyError as e:
             return Response({'message': f'KEY_ERROR: {e}'}, status=400)
-
         except ValueError as e:
             return Response({'message': f'VALUE_ERROR: {e}'}, status=400)
 
 
-#### User
-# class UserList(APIView): #전체 유저 리스트
+## Terms 약관동의 
+# class TermsList(APIView):
 #     def get(self, request):
-#         model = User.objects.all()
+#         model = Terms.objects.all()
 #         # serializer = UserSerializer(model, many=True)
-#         serializer = UserSerializer(model, context={'request': request}, many=True)
+#         serializer = TermsSerializer(model, context={'request': request}, many=True)
 #         return Response(serializer.data)
 
+class TermsAgreement(generics.CreateAPIView): #회원가입
+    queryset = Terms.objects.all()
+    serializer_class = TermsSerializer
+
+
+class UserTermsDetail(APIView): 
+    def get_user(self, user_id): #특정 유저 가져오기
+        try:
+            model = Terms.objects.get(user=user_id)
+            model.save()
+            return model
+        except Terms.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'Terms with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = TermsSerializer(self.get_user(user_id), context={'request': request})
+        return Response(serializer.data)
+
+    def put(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'Terms with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = TermsSerializer(self.get_user(user_id), data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+### Email 인증
+def message(domain, uidb64, token):
+    return f"아래 링크를 클릭하면 빌RUN 계정이 활성화됩니다. \n{domain}/users/{uidb64}/{token}\n\n감사합니다:) "
+
+class EmailConfirm(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        try:
+            validate_email(data['email'])
+            if BillrunUser.objects.filter(email=data['email']).exists():
+                return Response({"message":"EXISTS_EMAIL"}, status=400)
+            phone = request.data['phone']
+            community = request.data['community']
+            email = request.data['email']
+            user = BillrunUser.objects.create_user(
+                phone=phone, 
+                community = community,
+                email = email,
+                lat = 0,
+                lng = 0
+            )
+
+            domain = request.build_absolute_uri()
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            token = account_activation_token.make_token(user)
+            message_data = message(domain, uidb64, token)
+
+            title = '빌RUN 커뮤니티 인증 확인 이메일'
+            email = EmailMessage(title, message_data, to=[email])
+            email.send()
+            return Response({'message': 'SUCCESS'}, status=200)
+        
+        except KeyError as e:
+            return Response({'message': f'KEY_ERROR: {e}'}, status=400)
+        except TypeError as e:
+            return Response({'message': f'TYPE_ERROR: {e}'}, status=400)
+        except ValidationError as e:
+            return Response({'message': f'VALIDATION_ERROR: {e}'}, status=400)
+
+# Email 인증 완료 -> 계정 활성화
+def activate(request, uidb64, token):
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    user = BillrunUser.objects.get(pk=uid)
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        user = PasswordlessAuthBackend.authenticate(phone=user.phone)
+        try:
+            payload = JWT_PAYLOAD_HANDLER(user)
+            jwt_token = JWT_ENCODE_HANDLER(payload)
+            update_last_login(None, user)
+        except BillrunUser.DoesNotExist:
+            raise serializers.ValidationError(
+                'User with given phone number does not exists'
+            )
+        # auth.login(request, user)
+        return redirect('api:user_active')
+    else:
+        return HttpResponse('비정상적인 접근입니다.')
+
+def activate_success(request):
+    return render(request, 'api/user_active.html')
+
+#로그아웃
+# class LogoutView(APIView):
+#     permission_classes = (IsAuthenticated,)
+
 #     def post(self, request):
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         try:
+#             refresh_token = request.data["refresh_token"]
+#             token = RefreshToken(refresh_token)
+#             token.blacklist()
+
+#             return Response(status=status.HTTP_205_RESET_CONTENT)
+#         except Exception as e:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+### User
+class UserList(APIView): #전체 유저 리스트
+    def get(self, request):
+        model = BillrunUser.objects.all()
+        # serializer = UserSerializer(model, many=True)
+        serializer = UserSerializer(model, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ## 마이페이지
 # 리뷰의 유저점수에서 평균을 내 빌런지수 보여주기(level)
@@ -86,58 +261,60 @@ class SMSConfirm(APIView):
 # 유저의 거래 내역(Deal) - 대면/비대면 필터링
 # 유저의 리뷰 내력(받은거)
 
-# class UserDetail(APIView): #마이페이지
-#     def get_user(self, user_id): #특정 유저 가져오기
-#         try:
-#             model = User.objects.get(id=user_id)
+#TODO 번돈, 빌런지수, 닉네임랜덤로직
+class UserDetail(APIView): #마이페이지
+    def get_user(self, user_id): #특정 유저 가져오기
+        try:
+            model = BillrunUser.objects.get(id=user_id)
 
-#             value = 0
-#             ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
-#             #빌려드림에서 내가 올린 상품의 금액
-#             for x in Product.objects.filter(user=model.id, lend=True, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
-#                 # period = 
-#                 value += x.price
-#             #빌림에서 내가 빌려준 상품의 금액
-#             for y in Product.objects.filter(deal__user=model.id, lend=False, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
-#                 value += y.price
+            # value = 0
+            # ##내가 빌려준 거래의 상품들 가져오기(거래완료 상태!!)
+            # #빌려드림에서 내가 올린 상품의 금액
+            # for x in Product.objects.filter(user=model.id, lend=True, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
+            #     # period = 
+            #     value += x.price
+            # #빌림에서 내가 빌려준 상품의 금액
+            # for y in Product.objects.filter(deal__user=model.id, lend=False, deal__deal_prop='COM'): #_id 수정해봤는데 값 잘 나오네요
+            #     value += y.price
 
-#             model.money = value #내가 번 돈 저장
-#             model.save()
-#             return model
-#         except User.DoesNotExist:
-#             return
+            # model.money = value #내가 번 돈 저장
+            model.save()
+            return model
+        except BillrunUser.DoesNotExist:
+            return
 
-#     # def sum_price(self, request, user_id):
-#     #     if not self.get_user(user_id):
-#     #         return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-#     #     serializer = UserSerializer(self.get_user(user_id), data=request.data)
-#     #     if serializer.is_valid():
-#     #         serializer.object.level = 
-#     #         serializer.save()
-#     #         return Response (serializer.data, status=status.HTTP_201_CREATED)
-#     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    # 이건 사용 안한것같다.
+    # def sum_price(self, request, user_id):
+    #     if not self.get_user(user_id):
+    #         return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+    #     serializer = UserSerializer(self.get_user(user_id), data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.object.level = 
+    #         serializer.save()
+    #         return Response (serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-#     def get(self, request, user_id):
-#         if not self.get_user(user_id):
-#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-#         serializer = UserSerializer(self.get_user(user_id), context={'request': request})
-#         return Response(serializer.data)
+    def get(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(self.get_user(user_id), context={'request': request})
+        return Response(serializer.data)
 
-#     def put(self, request, user_id):
-#         if not self.get_user(user_id):
-#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-#         serializer = UserSerializer(self.get_user(user_id), data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    def put(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(self.get_user(user_id), data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-#     def delete(self, request, user_id):
-#         if not self.get_user(user_id):
-#             return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-#         model = self.get_user(user_id)
-#         model.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, user_id):
+        if not self.get_user(user_id):
+            return Response(f'User with {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        model = self.get_user(user_id)
+        model.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # class UserDetail_LendList(APIView): #마이페이지_빌려드림 거래목록. 아직 사용 안했고 추후 수정해야함!
 #     def get(self, request, user_id):
@@ -168,15 +345,14 @@ class UserCreate(generics.CreateAPIView): #회원가입
 #{"phone":"01066278667"}
 #로그인
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def signin(request):
+    print(request)
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
         if not serializer.is_valid(raise_exception=True):
             return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
         if serializer.validated_data['phone'] == "None":
             return Response({"message": "fail"}, status=status.HTTP_200_OK)
-        
         response = {
             'success': 'True',
             'token': serializer.data['token']
@@ -208,7 +384,7 @@ class ProductList(APIView): #전체 상품 목록 (이건 그냥 개발시 참�
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLendProductList(APIView): #특정 유저가 빌려주는 물품 리스트
     def get_product(self, user_id):
@@ -289,7 +465,7 @@ class DealList(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DealDetail(APIView): #거래 상세보기
     def get_deal(self, deal_id):
@@ -349,21 +525,20 @@ class RentDealList(APIView): #특정 유저가 빌린 거래 리스트
 #거래에 대한 리뷰 작성 - 해당 거래의 유저들만 리뷰 한번만! 작성 가능
 #상품, 유저점수는 0.5~5로 0.5단위
 
-class ReviewList(APIView): #리뷰 목록 (이건 그냥 개발시 참고용!)
-    def get(self, request): #전체 리뷰 목록
-        model = Review.objects.all()
-        serializer = ReviewSerializer(model, many=True)
-        return Response(serializer.data)
+# class ReviewList(APIView): #리뷰 목록 (이건 그냥 개발시 참고용!)
+#     def get(self, request): #전체 리뷰 목록
+#         model = Review.objects.all()
+#         serializer = ReviewSerializer(model, many=True)
+#         return Response(serializer.data)
 
-    def post(self, request): #리뷰 남기기
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            # serializer.object.product_id.user_id.id
-            # serializer.object.deal_id.user_id.id
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+#     def post(self, request): #리뷰 남기기
+#         serializer = ReviewSerializer(data=request.data)
+#         if serializer.is_valid():
+#             # serializer.object.product_id.user_id.id
+#             # serializer.object.deal_id.user_id.id
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DealReviewPost(APIView):
     def post(self, request): #거래 리뷰 작성
@@ -414,43 +589,43 @@ class ProductReviewDetail(APIView): #특정 물품에 대한 리뷰 가져오기
         return Response(serializer.data)
 
 ###이전리뷰
-class ReviewDetail(APIView): #특정 상품에 대한 리뷰 가져오기
-    def get_review(self, product_id):
-        try:
-            # 현재 로그인한 유저가 이 둘 중 하나라면 리뷰 작성할 수 있도록. 아닐 경우 권한이 없습니다.
-            # 추후 작성
-            # deal = Deal.objects.get(id=deal_id)
-            # user1 = User.objects.get(id=deal.user_id.id) #거래에 참여한 사람
-            # user2 = User.objects.get(id=deal.product_id.user_id.id) #상품을 올린 사람
+# class ReviewDetail(APIView): #특정 상품에 대한 리뷰 가져오기
+#     def get_review(self, product_id):
+#         try:
+#             # 현재 로그인한 유저가 이 둘 중 하나라면 리뷰 작성할 수 있도록. 아닐 경우 권한이 없습니다.
+#             # 추후 작성
+#             # deal = Deal.objects.get(id=deal_id)
+#             # user1 = User.objects.get(id=deal.user_id.id) #거래에 참여한 사람
+#             # user2 = User.objects.get(id=deal.product_id.user_id.id) #상품을 올린 사람
 
-            # 이 상품의 카테고리
-            # if deal.product_id.category:
-            #     return #user1이 빌리는 사람, user2가 빌려주는 사람
-            # else:
-            #     return #user1이 빌려주는 사람, user2가 빌리는 사람
+#             # 이 상품의 카테고리
+#             # if deal.product_id.category:
+#             #     return #user1이 빌리는 사람, user2가 빌려주는 사람
+#             # else:
+#             #     return #user1이 빌려주는 사람, user2가 빌리는 사람
             
-            # product = Product.objects.get(id=product_id)
-            # model = Review.objects.filter(deal_id_product_id_id=product_id)
+#             # product = Product.objects.get(id=product_id)
+#             # model = Review.objects.filter(deal_id_product_id_id=product_id)
             
-            model = Review.objects.filter(product_id=product_id)
-            return model
-        except Review.DoesNotExist:
-            return
+#             model = Review.objects.filter(product_id=product_id)
+#             return model
+#         except Review.DoesNotExist:
+#             return
 
-    def get(self, request, product_id):
-        if not self.get_review(product_id):
-            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ReviewSerializer(self.get_review(product_id), many=True)
-        return Response(serializer.data)
+#     def get(self, request, product_id):
+#         if not self.get_review(product_id):
+#             return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#         serializer = ReviewSerializer(self.get_review(product_id), many=True)
+#         return Response(serializer.data)
 
-    def put(self, request, product_id):
-        if not self.get_review(product_id):
-            return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
-        serializer = ReviewSerializer(self.get_review(product_id), data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+#     def put(self, request, product_id):
+#         if not self.get_review(product_id):
+#             return Response(f'Review with Product id {product_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+#         serializer = ReviewSerializer(self.get_review(product_id), data=request.data, many=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 #### Favorite
 def product_like_toggle(request, product_id):
@@ -489,7 +664,7 @@ class FavoriteDetail(APIView):
         try:
             model = Favorite.objects.filter(user_id=user_id)
             return model
-        except Review.DoesNotExist:
+        except Favorite.DoesNotExist:
             return
 
     def get(self, request, user_id):
