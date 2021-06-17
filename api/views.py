@@ -21,13 +21,13 @@ from .auth_backend import PasswordlessAuthBackend
 from cryptography.fernet import Fernet
 # import bcrypt
 import base64
-from .secret import ENCODE_KEY
+# from .secret import ENCODE_KEY
 from rest_framework.decorators import api_view, permission_classes
 # from rest_framework_simplejwt.tokens import RefreshToken
 # from rest_framework.permissions import AllowAny
 import json
 
-fernet = Fernet(ENCODE_KEY)
+# fernet = Fernet(ENCODE_KEY)
 
 # # 핸드폰번호 암호화
 # def encrypt_phone(phone):

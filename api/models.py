@@ -5,7 +5,8 @@ from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
-from .secret import *
+from BillRun_back.my_settings import *
+# from .secret import *
 # from urllib.parse import unquote
 
 import hashlib
@@ -18,7 +19,7 @@ import json
 profile_default = 'user/default_user.png'
 photo_default = 'photo/no_image.png'
 
-fernet = Fernet(ENCODE_KEY)
+# fernet = Fernet(ENCODE_KEY)
 
 ### Auth
 class AuthSms(models.Model):
@@ -32,21 +33,20 @@ class AuthSms(models.Model):
         self.auth_number = randint(1000, 10000)
         super().save(*args, **kwargs)
         self.send_sms() # 인증번호가 담긴 SMS를 전송
-        print("전송 완료")
-
+        
     def send_sms(self):
         # phone = self.phone
         # phone_decrypted = fernet.decrypt(phone)
 
         timestamp = str(int(time.time() * 1000)) #시간제한 5분
-        secret_key = bytes(SECRET_KEY, 'UTF-8')
+        secret_key = bytes(NAVER_SECRET_KEY, 'UTF-8')
         url = "https://sens.apigw.ntruss.com"
         requestUrl = "/sms/v2/services/"
         requestUrl2 = "/messages"
-        uri = requestUrl + SERVICE_ID + requestUrl2
+        uri = requestUrl + SMS_SERVICE_ID + requestUrl2
         apiUrl = url+ uri
-        serviceId = SERVICE_ID
-        access_key = ACCESS_KEY
+        serviceId = SMS_SERVICE_ID
+        access_key = NAVER_ACCESS_KEY
         method = "POST"
         message = method + " " + uri + "\n" + timestamp + "\n" + access_key
         message = bytes(message, 'UTF-8')
