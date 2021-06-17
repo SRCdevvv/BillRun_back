@@ -219,8 +219,8 @@ class Product(models.Model):
     DEFAULT_PK=1
     PRICEPROP = (
         ('Day', '일 당'),
-        ('30m', '30분 당'),
         ('1h', '시간 당'),
+        ('1w', '주당'),
     )
     GROUP = (
         ('Woman', '여성의류/잡화'),
@@ -241,7 +241,6 @@ class Product(models.Model):
     caution = models.TextField()
     price = models.IntegerField()
     price_prop = models.CharField(max_length=10, choices=PRICEPROP)
-    place_option = models.BooleanField(default=True) #안심거래옵션
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL)
