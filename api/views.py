@@ -361,6 +361,10 @@ def signin(request):
 
 
 #### Product
+class ProductPost(generics.CreateAPIView): #상품등록
+    queryset = Product.objects.all()
+    serializer_class = ProductPostSerializer
+
 class LendProductList(APIView): #빌려주는 상품 목록
     def get(self, request):
         model = Product.objects.filter(lend=True)

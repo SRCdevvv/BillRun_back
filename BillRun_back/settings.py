@@ -13,12 +13,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
-from .my_settings import *
+# from .my_settings import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+ 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -200,9 +200,17 @@ JWT_AUTH = {
 # }
 
 #Email
-EMAIL_HOST = EMAIL_HOST
-EMAIL_PORT = EMAIL_PORT	 # 서버 포트
-EMAIL_HOST_USER = EMAIL_HOST_USER 	 # 우리가 사용할 Gmail
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD		 # 우리가 사용할 Gmail pw
+EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
+EMAIL_PORT = '587' 			 # 서버 포트
+EMAIL_HOST_USER = 'sarangchecompany@gmail.com' 	 # 우리가 사용할 Gmail
+EMAIL_HOST_PASSWORD = 'src121212'		 # 우리가 사용할 Gmail pw
 EMAIL_USE_TLS = True			 # TLS 보안 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정
+
+# #Email
+# EMAIL_HOST = EMAIL_HOST
+# EMAIL_PORT = EMAIL_PORT	 # 서버 포트
+# EMAIL_HOST_USER = EMAIL_HOST_USER 	 # 우리가 사용할 Gmail
+# EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD		 # 우리가 사용할 Gmail pw
+# EMAIL_USE_TLS = True			 # TLS 보안 설정
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정

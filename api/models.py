@@ -5,9 +5,7 @@ from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
-from BillRun_back.my_settings import *
-# from .secret import *
-# from urllib.parse import unquote
+# from BillRun_back.my_settings import *
 
 import hashlib
 import hmac
@@ -18,6 +16,13 @@ import json
 
 profile_default = 'user/default_user.png'
 photo_default = 'photo/no_image.png'
+
+#SMS
+PHONE = '01066278667'
+NAVER_ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
+NAVER_SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx'
+SMS_SECRET_KEY = '2d99e064782c4640b5816ee9d762e792'
+SMS_SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
 
 # fernet = Fernet(ENCODE_KEY)
 
