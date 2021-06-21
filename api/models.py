@@ -110,7 +110,7 @@ class UserManager(BaseUserManager):
                 BillrunUser.objects.get(nickname=nickname)
             except: # BillrunUser.DoesNotExist
                 break
-        fernet = Fernet(ENCODE_KEY)
+        # fernet = Fernet(ENCODE_KEY)
         #TODO 핸드폰번호 암호화
         user = self.model(
             # phone = fernet.encrypt(phone.encode()),
@@ -126,7 +126,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, email, nickname, password):
-        fernet = Fernet(ENCODE_KEY)
+        # fernet = Fernet(ENCODE_KEY)
         user = self.create_user(
             # phone = fernet.encrypt(bytes(phone, 'utf-8')),
             phone = phone,
