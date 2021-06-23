@@ -16,6 +16,7 @@ class UUSerializer(serializers.ModelSerializer): #간단쓰
         # fields = '__all__'
         fields = ('id', 'nickname')
 
+
 class UserSerializer(serializers.ModelSerializer):
     # place = serializers.CharField(required=False)
     # username = serializers.ReadOnlyField(source='user.username')
@@ -24,6 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = BillrunUser
         # fields = '__all__'
         fields = ['id', 'nickname', 'email', 'community', 'lat', 'lng', 'location', 'money', 'score', 'profile', 'is_active']
+
 
 class UserCreateSerializer(serializers.ModelSerializer): #회원가입
     def create(self, validated_data):
@@ -36,6 +38,7 @@ class UserCreateSerializer(serializers.ModelSerializer): #회원가입
             lng = validated_data['lng']
         )
         return user
+
     class Meta:
         model = BillrunUser
         # fields = '__all__'
@@ -71,10 +74,12 @@ class UserLoginSerializer(serializers.ModelSerializer): #로그인
         model = BillrunUser
         fields = ['phone', 'token']
 
+
 class TermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Terms
         fields = '__all__'
+
 
 class PPSerializer(serializers.ModelSerializer): #간단
     class Meta:
@@ -82,12 +87,14 @@ class PPSerializer(serializers.ModelSerializer): #간단
         # fields = '__all__'
         fields = ['name']
 
+
 class ProductPhotoSerializer(serializers.ModelSerializer): #물품사진불러올때
     photo = serializers.ImageField(use_url=True)
 
     class Meta:
         model = ProductPhoto
         fields = ['photo']
+
 
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
@@ -116,30 +123,47 @@ class ProductSerializer(serializers.ModelSerializer):
             ProductPhoto.objects.create(product=instance, photo=photo_data)
         return instance
 
+
 class ProductPostSerializer(serializers.ModelSerializer):
-    photo = serializers.ImageField(use_url=True)
-    # photos = serializers.ImageField(source='product.photos')
+    # photo = serializers.ImageField(use_url=True, required=False)
+    # photo = serializers.ImageField(source='productphoto.photo')
+    photo = ProductPhotoSerializer() #원래이걸로해써횹
+    # photo2 = ProductPhotoSerializer()
+    # photos = serializers.SerializerMethodField()
+    # photo2 = serializers.ImageField(use_url=True)
+    # photos = serializers.ImageField()
 
     # def create(self, validated_data):
-    #     photos = validated_data.get("product", {}).get('photos')
+    #     photos = validated_data.get("photos", {}).get('photo') #'InMemoryUploadedFile' object has no attribute 'get'
+    #     # photos = validated_data.get("p", {}).get('photo') #`create()` did not return an object instance.
     #     return photos
 
-    def get_photos(self, obj):
-        photo = obj.productphoto_set.all()
-        return ProductPhotoSerializer(instance=photo, many=True).data
+    # def get_photos(self, obj):
+    #     photo = obj.productphoto_set.all()
+    #     return ProductPhotoSerializer(instance=photo, many=True).data
 
-    def create(self, validated_data):
-        instance = Product.objects.create(**validated_data)
-        photo_set = self.context['request'].FILES
-        for photo_data in photo_set.getlist('photo'):
-            ProductPhoto.objects.create(product=instance, photo=photo_data)
-        return instance
-    
     class Meta:
         model = Product
         # fields = '__all__'
-        fields = ['lend', 'name', 'photo', 'description', 'caution', 'user', 'price', 'price_prop']
+        fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo']
+        # 다 되고나서 위도경도도 추가할것!
 
+    def create(self, validated_data):
+        photo_data = validated_data.pop('photo')
+        product = Product.objects.create(**validated_data)
+        # for photo in photo_data:
+        #     product.photo.create(**photo)
+        ProductPhoto.objects.create(product=product, **photo_data)
+        return product
+
+    #Product() got an unexpected keyword argument 'photo'
+    # def create(self, validated_data):
+    #     instance = Product.objects.create(**validated_data)
+    #     photo_set = self.context['request'].FILES
+    #     for photo_data in photo_set.getlist('photo'):
+    #         ProductPhoto.objects.create(product=instance, photo=photo_data)
+    #     return instance
+    
 
 class DealSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
@@ -151,6 +175,7 @@ class DealSerializer(serializers.ModelSerializer):
         model = Deal
         # fields = '__all__'
         fields = ('id', 'product_id', 'user', 'period', 'datentime', 'deal_prop', 'deal_option')
+
 
 class DDSerializer(serializers.ModelSerializer):
     product = PPSerializer(read_only=True)
@@ -171,6 +196,7 @@ class DealReviewSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         # fields = ('q1', 'q2', 'q3', 'user', 'created_at')
         fields = ('q1', 'q2', 'q3', 'q4', 'user', 'created_at')
+
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
