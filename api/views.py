@@ -107,12 +107,15 @@ class SMSConfirm(APIView):
                     ## Signin
                     # signin(request._request)
                     serializer = UserLoginSerializer(data=request.data)
+                    user = BillrunUser.objects.get(phone=phone)
                     if not serializer.is_valid(raise_exception=True):
                         return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
                     if serializer.validated_data['phone'] == "None":
                         return Response({"message": "fail"}, status=status.HTTP_200_OK)
                     response = {
                         'success': 'True',
+                        'user': user.id,
+                        'phone': user.phone,
                         'token': serializer.data['token']
                     }
                     return Response(response, status=status.HTTP_200_OK)
@@ -349,12 +352,15 @@ def signin(request):
     print(request)
     if request.method == 'POST':
         serializer = UserLoginSerializer(data=request.data)
+        user = BillrunUser.objects.get(phone=request.data['phone'])
         if not serializer.is_valid(raise_exception=True):
             return Response({"message":"Request Body Error."}, status=status.HTTP_409_CONFLICT)
         if serializer.validated_data['phone'] == "None":
             return Response({"message": "fail"}, status=status.HTTP_200_OK)
         response = {
             'success': 'True',
+            'user': user.id,
+            'phone': user.phone,
             'token': serializer.data['token']
         }
         return Response(response, status=status.HTTP_200_OK)
