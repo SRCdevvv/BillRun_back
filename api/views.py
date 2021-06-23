@@ -24,7 +24,7 @@ import base64
 # from .secret import ENCODE_KEY
 from rest_framework.decorators import api_view, permission_classes
 # from rest_framework_simplejwt.tokens import RefreshToken
-# from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny
 import json
 
 # fernet = Fernet(ENCODE_KEY)
@@ -80,6 +80,7 @@ def main_prodeal(request):
 # 	signingKey = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
 # 	return signingKey
 
+@permission_classes([AllowAny])
 class SMSVerification(APIView):
     def post(self, request):
         try:
@@ -93,6 +94,7 @@ class SMSVerification(APIView):
             return Response({'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@permission_classes([AllowAny])
 class SMSConfirm(APIView):
     def post(self, request):
         try:
@@ -135,6 +137,7 @@ class SMSConfirm(APIView):
 #         serializer = TermsSerializer(model, context={'request': request}, many=True)
 #         return Response(serializer.data)
 
+@permission_classes([AllowAny])
 class TermsAgreement(generics.CreateAPIView): #회원가입
     queryset = Terms.objects.all()
     serializer_class = TermsSerializer
@@ -169,6 +172,7 @@ class UserTermsDetail(APIView):
 def message(domain, uidb64, token):
     return f"아래 링크를 클릭하면 빌RUN 계정이 활성화됩니다. \n{domain}/users/{uidb64}/{token}\n\n감사합니다:) "
 
+@permission_classes([AllowAny])
 class EmailConfirm(APIView):
     def post(self, request):
         data = json.loads(request.body)
@@ -348,6 +352,7 @@ class UserCreate(generics.CreateAPIView): #회원가입
 #{"phone":"01066278667"}
 #로그인
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signin(request):
     print(request)
     if request.method == 'POST':

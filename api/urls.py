@@ -40,7 +40,7 @@ urlpatterns = [
     # path('rent_product_list/<int:product_id>/new_review', ReviewDetail.as_view(), name="new_review_rent"),
 
     #상품 등록
-    path('product_post/', ProductPost.as_view(), name="product_register"),
+    path('product_post/', ProductPost.as_view(), name="product_post"),
     path('product_list/', ProductList.as_view(), name="product_list"),
 
     #전체 상품에서 상세보기(일단 만들어 놓음)
