@@ -199,7 +199,10 @@ class EmailConfirm(APIView):
             title = '빌RUN 커뮤니티 인증 확인 이메일'
             email = EmailMessage(title, message_data, to=[email])
             email.send()
-            return Response({'message': 'SUCCESS'}, status=200)
+            return Response({
+                'message': 'SUCCESS',
+                'user': user.id
+            }, status=200)
         
         except KeyError as e:
             return Response({'message': f'KEY_ERROR: {e}'}, status=400)
@@ -331,6 +334,7 @@ class UserDetail(APIView): #마이페이지
 #         return Response(serializer.data)
 
 #### New User
+@permission_classes([AllowAny])
 class UserCreate(generics.CreateAPIView): #회원가입
     queryset = BillrunUser.objects.all()
     serializer_class = UserCreateSerializer

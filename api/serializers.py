@@ -52,7 +52,6 @@ class UserLoginSerializer(serializers.ModelSerializer): #로그인
     def validate(self, data):
         phone = data.get("phone", None)
         user = PasswordlessAuthBackend.authenticate(phone=phone)
-        print(user) #로그인유저확인!
         if user is None:
             return {
                 'phone': 'None'
@@ -76,9 +75,24 @@ class UserLoginSerializer(serializers.ModelSerializer): #로그인
 
 
 class TermsSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField()
+
+    def get_token(self, data):
+        user = data.user
+        if user is None:
+            return {
+                'user is None'
+            }
+        payload = JWT_PAYLOAD_HANDLER(user)
+        jwt_token = JWT_ENCODE_HANDLER(payload)
+        print(jwt_token)
+        # return {'token': jwt_token}
+        return jwt_token
+
     class Meta:
         model = Terms
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['user', 'token', 'service', 'privacy', 'location', 'marketing']
 
 
 class PPSerializer(serializers.ModelSerializer): #간단
