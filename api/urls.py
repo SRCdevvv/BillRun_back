@@ -46,6 +46,9 @@ urlpatterns = [
     #카테고리 별 상품 목록
     path('product_list/<str:ctgr>', ProductCategoryList.as_view(), name="product_ctgt"),
 
+    #물품 상세보기
+    path('product/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
+
     #전체 상품에서 상세보기(일단 만들어 놓음)
     # path('product_list/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
 
