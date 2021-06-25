@@ -378,7 +378,10 @@ def signin(request):
 #### Product
 class ProductPost(generics.CreateAPIView): #상품등록
     queryset = Product.objects.all()
-    serializer_class = ProductPostSerializer
+    try:
+        serializer_class = ProductPostSerializer
+    except AttributeError:
+        pass
 
 class LendProductList(APIView): #빌려주는 상품 목록
     def get(self, request):

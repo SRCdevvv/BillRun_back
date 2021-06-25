@@ -85,8 +85,6 @@ class TermsSerializer(serializers.ModelSerializer):
             }
         payload = JWT_PAYLOAD_HANDLER(user)
         jwt_token = JWT_ENCODE_HANDLER(payload)
-        print(jwt_token)
-        # return {'token': jwt_token}
         return jwt_token
 
     class Meta:
@@ -143,7 +141,7 @@ class ProductPostSerializer(serializers.ModelSerializer):
     # photo = serializers.ImageField(source='productphoto.photo')
     photo = ProductPhotoSerializer() #원래이걸로해써횹
     # photo2 = ProductPhotoSerializer()
-    # photos = serializers.SerializerMethodField()
+    # photo = serializers.SerializerMethodField()
     # photo2 = serializers.ImageField(use_url=True)
     # photos = serializers.ImageField()
 
@@ -162,7 +160,7 @@ class ProductPostSerializer(serializers.ModelSerializer):
         fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo']
         # 다 되고나서 위도경도도 추가할것!
 
-    def create(self, validated_data):
+    def create(self, validated_data): #원래이걸로해써횹
         photo_data = validated_data.pop('photo')
         product = Product.objects.create(**validated_data)
         # for photo in photo_data:
@@ -170,7 +168,7 @@ class ProductPostSerializer(serializers.ModelSerializer):
         ProductPhoto.objects.create(product=product, **photo_data)
         return product
 
-    #Product() got an unexpected keyword argument 'photo'
+    # #Product() got an unexpected keyword argument 'photo'
     # def create(self, validated_data):
     #     instance = Product.objects.create(**validated_data)
     #     photo_set = self.context['request'].FILES
