@@ -43,8 +43,11 @@ urlpatterns = [
     path('product_post/', ProductPost.as_view(), name="product_post"),
     path('product_list/', ProductList.as_view(), name="product_list"),
 
+    #카테고리 별 상품 목록
+    path('product_list/<str:ctgr>', ProductCategoryList.as_view(), name="product_ctgt"),
+
     #전체 상품에서 상세보기(일단 만들어 놓음)
-    path('product_list/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
+    # path('product_list/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
 
     #거래 진행
     path('deal_list/', DealList.as_view(), name="deal_list"),

@@ -228,15 +228,15 @@ class Product(models.Model):
         ('1w', '주당'),
     )
     GROUP = (
-        ('Woman', '여성의류/잡화'),
-        ('Man', '남성의류/잡화'),
-        ('Digital', '디지털/가전'),
-        ('MajorBook', '전공도서'),
-        ('MajorEtc', '전공기타'),
-        ('Game', '게임'),
-        ('Sports', '스포츠'),
-        ('Household', '생활잡화'),
-        ('Etc', '기타'),
+        ('woman', '여성의류/잡화'),
+        ('man', '남성의류/잡화'),
+        ('digital', '디지털/가전'),
+        ('majorBook', '전공도서'),
+        ('majorEtc', '전공기타'),
+        ('game', '게임'),
+        ('sports', '스포츠'),
+        ('household', '생활잡화'),
+        ('etc', '기타'),
     )
 
     lend = models.BooleanField(default=True)
