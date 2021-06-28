@@ -1,11 +1,16 @@
 from django.urls import path, include
 from rest_framework import urls
-import rest_framework
+from rest_framework.routers import DefaultRouter
 from .views import *
 from django.conf.urls import url, static
 from django.conf import settings
 
 app_name='api'
+router = DefaultRouter()
+router.register('product', ProductViewSet)
+router.register('lend', LendProductViewSet)
+router.register('rent', RentProductViewSet)
+
 urlpatterns = [
     ### Main
     path('', main, name="main"),
@@ -43,22 +48,25 @@ urlpatterns = [
     path('product_post/', ProductPost.as_view(), name="product_post"),
 
     # 전체 상품 목록
-    path('product_list/', ProductList.as_view(), name="product_list"),
+    # path('product_list/', ProductList.as_view(), name="product_list"),
+    # path('product_list/', product_list),
+    path('product_list/', include(router.urls)),
 
     # 카테고리 별 상품 목록
-    path('product_list/<str:ctgr>', ProductCategoryList.as_view(), name="product_ctgr"),
+    path('product/<str:ctgr>', ProductCategoryList.as_view(), name="product_ctgr"),
 
     # 물품 상세보기
-    path('product/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
+    # path('product/<int:product_id>', ProductDetail.as_view(), name="product_detail"),
+    # path('product/<int:product_id>', product_detail),
 
     # Lend 빌려드림
-    path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
-    path('lend_product_list/<int:product_id>', ProductDetail.as_view(), name="lend_product_detail"), #물품 상세보기
+    # path('lend_product_list/', LendProductList.as_view(), name="lend_product_list"),
+    # path('lend_product_list/<int:product_id>', ProductDetail.as_view(), name="lend_product_detail"), #물품 상세보기
     path('lend_product_list/user_id=<int:user_id>', UserLendProductList.as_view(), name="user_lend_product"), #특정 유저의 빌려드림 리스트
     
     # Rent 빌림
-    path('rent_product_list/', RentProductList.as_view(), name="rent_product_list"),
-    path('rent_product_list/<int:product_id>', ProductDetail.as_view(), name="rent_product_detail"), #물품 상세보기
+    # path('rent_product_list/', RentProductList.as_view(), name="rent_product_list"),
+    # path('rent_product_list/<int:product_id>', ProductDetail.as_view(), name="rent_product_detail"), #물품 상세보기
     path('rent_product_list/user_id=<int:user_id>', UserRentProductList.as_view(), name="user_rent_product"), #특정 유저의 빌림 리스트
 
     # Like 좋아요 누르기 TODO 추가개발필요

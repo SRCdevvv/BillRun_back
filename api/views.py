@@ -4,8 +4,10 @@ from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.utils.encoding import force_bytes, force_text
+from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
-from rest_framework.serializers import Serializer
+from rest_framework.filters import SearchFilter
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
@@ -384,30 +386,60 @@ class ProductPost(generics.CreateAPIView): #상품등록
     except AttributeError:
         pass
 
-class LendProductList(APIView): #빌려주는 상품 목록(빌려드림)
-    def get(self, request):
-        model = Product.objects.filter(lend=True)
-        serializer = ProductSerializer(model, context={'request': request}, many=True)
-        return Response(serializer.data)
+class LendProductViewSet(viewsets.ModelViewSet): #빌려주는 상품 목록(빌려드림)
+    queryset = Product.objects.filter(lend=True)
+    serializer_class = ProductSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
 
-class RentProductList(APIView): #빌리는 상품 목록(빌림)
-    def get(self, request):
-        model = Product.objects.filter(lend=False)
-        serializer = ProductSerializer(model, context={'request': request}, many=True)
-        return Response(serializer.data)
+class RentProductViewSet(viewsets.ModelViewSet): #빌리는 상품 목록(빌림)
+    queryset = Product.objects.filter(lend=False)
+    serializer_class = ProductSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
 
-class ProductList(APIView): #전체 상품 목록 (이건 그냥 개발시 참고용!)
-    def get(self, request):
-        model = Product.objects.all()
-        serializer = ProductSerializer(model, context={'request': request}, many=True)
-        return Response(serializer.data)
+class ProductViewSet(viewsets.ModelViewSet):#전체 상품 목록
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name'] #?search=여성
 
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class LendProductList(APIView): #빌려주는 상품 목록(빌려드림)
+#     def get(self, request):
+#         model = Product.objects.filter(lend=True)
+#         serializer = ProductSerializer(model, context={'request': request}, many=True)
+#         # filter_backends = [SearchFilter]
+#         # search_fields = ('name')
+#         return Response(serializer.data)
+
+# class RentProductList(APIView): #빌리는 상품 목록(빌림)
+#     def get(self, request):
+#         model = Product.objects.filter(lend=False)
+#         serializer = ProductSerializer(model, context={'request': request}, many=True)
+#         return Response(serializer.data)
+    
+# class ProductList(APIView): #전체 상품 목록 (이건 그냥 개발시 참고용!)
+#     def get(self, request):
+#         model = Product.objects.all()
+#         serializer = ProductSerializer(model, context={'request': request}, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = ProductSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# product_list = ProductViewSet.as_view({
+#     'get': 'list',
+# })
+
+# product_detail = ProductViewSet.as_view({
+#     'get': 'retrieve',
+#     'put': 'update',
+#     'delete': 'destroy',
+# })
 
 class ProductCategoryList(APIView): #카테고리별 물품 API
     def get_category(self, ctgr):
