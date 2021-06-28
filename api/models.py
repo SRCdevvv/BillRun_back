@@ -5,6 +5,7 @@ from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
+from uuid import uuid4
 # from BillRun_back.my_settings import *
 
 import hashlib
@@ -13,9 +14,10 @@ import base64
 import requests
 import time
 import json
+import os
 
-profile_default = 'user/default_user.png'
-photo_default = 'photo/no_image.png'
+profile_default = 'default/default_user.png'
+photo_default = 'default/no_image.png'
 
 #SMS
 PHONE = '01066278667'
@@ -102,7 +104,6 @@ class UserManager(BaseUserManager):
     def create_user(self, phone, community, email, lat, lng):
         if not phone:
             raise ValueError('핸드폰 번호를 입력해주세요.')
-        n = 8413
         while True:
             n = randint(1000,9999)
             nickname = "빌런" + str(n)
@@ -164,8 +165,10 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     score = models.IntegerField(default=10)
     
     def upload_profile(self, filename):
-        path = 'user/{}'.format(filename)
-        # unquote(path)
+        ymd_path = timezone.now().strftime('%Y/%m/')
+        uuid_name = uuid4().hex
+        extension = os.path.splitext(filename)[-1].lower()
+        path = f'{ymd_path}/user/{uuid_name + extension}'
         return path
 
     profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
@@ -271,9 +274,12 @@ class ProductPhoto(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     
     def upload_photo(self, filename):
-        path = 'photo/{}'.format(filename)
+        ymd_path = timezone.now().strftime('%Y/%m/')
+        uuid_name = uuid4().hex
+        extension = os.path.splitext(filename)[-1].lower()
+        path = f'{ymd_path}/photo/{uuid_name + extension}'
         return path
-
+        
     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
     def __str__(self):
@@ -427,11 +433,17 @@ class Notice(models.Model):
     updated_at = models.DateTimeField(auto_now = True, null= True)
     
     def upload_banner(self, filename):
-        path = 'notice/banner/{}'.format(filename)
+        ymd_path = timezone.now().strftime('%Y/%m/')
+        uuid_name = uuid4().hex
+        extension = os.path.splitext(filename)[-1].lower()
+        path = f'{ymd_path}/notice/banner/{uuid_name + extension}'
         return path
 
     def upload_contentphoto(self, filename):
-        path = 'notice/content/{}'.format(filename)
+        ymd_path = timezone.now().strftime('%Y/%m/')
+        uuid_name = uuid4().hex
+        extension = os.path.splitext(filename)[-1].lower()
+        path = f'{ymd_path}/notice/content/{uuid_name + extension}'
         return path
 
     def __str__(self):
