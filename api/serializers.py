@@ -5,7 +5,6 @@ from django.contrib.auth import authenticate, get_user_model, login
 from .auth_backend import PasswordlessAuthBackend
 from .models import *
 import datetime
-from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
@@ -141,7 +140,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class ProductPostSerializer(WritableNestedModelSerializer):
+class ProductPostSerializer(serializers.ModelSerializer):
     # photo = serializers.ImageField(use_url=True, required=False)
     # photo = serializers.ImageField(source='productphoto.photo')
     # photos = ProductPhotoSerializer(required=False) #원래이걸로해써횹
