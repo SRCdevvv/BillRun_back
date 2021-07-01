@@ -378,27 +378,24 @@ def signin(request):
         return Response(response, status=status.HTTP_200_OK)
 
 
-#### Product
-class ProductPost(generics.CreateAPIView): #상품등록
+#### Product 물품
+class ProductPost(generics.CreateAPIView): #물품등록
     queryset = Product.objects.all()
-    try:
-        serializer_class = ProductPostSerializer
-    except AttributeError:
-        pass
+    serializer_class = ProductPostSerializer
 
-class LendProductViewSet(viewsets.ModelViewSet): #빌려주는 상품 목록(빌려드림)
+class LendProductViewSet(viewsets.ModelViewSet): #빌려주는 물품 목록(빌려드림)
     queryset = Product.objects.filter(lend=True)
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name']
 
-class RentProductViewSet(viewsets.ModelViewSet): #빌리는 상품 목록(빌림)
+class RentProductViewSet(viewsets.ModelViewSet): #빌리는 물품 목록(빌림)
     queryset = Product.objects.filter(lend=False)
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name']
 
-class ProductViewSet(viewsets.ModelViewSet):#전체 상품 목록
+class ProductViewSet(viewsets.ModelViewSet):#전체 물품 목록
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]

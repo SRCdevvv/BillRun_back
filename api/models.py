@@ -157,8 +157,8 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     community = models.CharField(max_length=30, choices=Group)
     email = models.EmailField(max_length=254, unique=True)
     nickname = models.CharField(max_length=20, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #위도
-    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #경도
+    lat = models.DecimalField(max_digits=9, decimal_places=6, default=0) #위도
+    lng = models.DecimalField(max_digits=9, decimal_places=6, default=0) #경도
     location = models.CharField(max_length=50, default='', null=True, blank=True)
 
     money = models.IntegerField(default=0)
@@ -171,7 +171,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         path = f'{ymd_path}/user/{uuid_name + extension}'
         return path
 
-    profile = models.ImageField(upload_to=upload_profile, null=True, blank=True, default=profile_default)
+    profile = models.ImageField(upload_to=upload_profile, default=profile_default)
 
     def __str__(self):
         return f"{self.id}) {self.nickname}"
@@ -257,6 +257,19 @@ class Product(models.Model):
     location = models.CharField(max_length=50, default='', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
+    
+    def upload_photo(self, filename):
+        ymd_path = timezone.now().strftime('%Y/%m/')
+        uuid_name = uuid4().hex
+        extension = os.path.splitext(filename)[-1].lower()
+        path = f'{ymd_path}/photo/{uuid_name + extension}'
+        return path
+        
+    photo1 = models.ImageField(upload_to=upload_photo, default=photo_default)
+    photo2 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo3 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo4 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo5 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
 
     # def __str__(self):
     #     if self.lend:
@@ -270,20 +283,20 @@ class Product(models.Model):
             return f"{self.id}) [빌림]{self.name}"
 
 
-class ProductPhoto(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+# class ProductPhoto(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="photos")
     
-    def upload_photo(self, filename):
-        ymd_path = timezone.now().strftime('%Y/%m/')
-        uuid_name = uuid4().hex
-        extension = os.path.splitext(filename)[-1].lower()
-        path = f'{ymd_path}/photo/{uuid_name + extension}'
-        return path
+#     def upload_photo(self, filename):
+#         ymd_path = timezone.now().strftime('%Y/%m/')
+#         uuid_name = uuid4().hex
+#         extension = os.path.splitext(filename)[-1].lower()
+#         path = f'{ymd_path}/photo/{uuid_name + extension}'
+#         return path
         
-    photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
+#     photo = models.ImageField(upload_to=upload_photo, null=True, blank=True, default=photo_default)
 
-    def __str__(self):
-        return f"{self.product}"
+#     def __str__(self):
+#         return f"{self.product}"
     
 
 class Deal(models.Model):

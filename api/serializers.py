@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, get_user_model, login
 from .auth_backend import PasswordlessAuthBackend
 from .models import *
 import datetime
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
@@ -100,17 +101,16 @@ class PPSerializer(serializers.ModelSerializer): #간단
         fields = ['name']
 
 
-class ProductPhotoSerializer(serializers.ModelSerializer): #물품사진불러올때
-    photo = serializers.ImageField(use_url=True)
+# class ProductPhotoSerializer(serializers.ModelSerializer): #물품사진불러올때
+#     photo = serializers.ImageField(use_url=True)
 
-    class Meta:
-        model = ProductPhoto
-        fields = ['photo']
+#     class Meta:
+#         model = ProductPhoto
+#         fields = ['photo']
 
 
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
-    photos = serializers.SerializerMethodField()
     description = serializers.CharField(required=False)
     caution = serializers.CharField(required=False)
     price = serializers.CharField(required=False)
@@ -118,28 +118,33 @@ class ProductSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
     lat = serializers.IntegerField(required=False)
     lng = serializers.IntegerField(required=False)
+    photo1 = serializers.ImageField(required=False)
+    photo2 = serializers.ImageField(required=False)
+    photo3 = serializers.ImageField(required=False)
+    photo4 = serializers.ImageField(required=False)
+    photo5 = serializers.ImageField(required=False)
 
-    def get_photos(self, obj):
-        photo = obj.productphoto_set.all()
-        return ProductPhotoSerializer(instance=photo, many=True, context=self.context).data
+    # def get_photos(self, obj):
+    #     photo = obj.productphoto_set.all()
+    #     return ProductPhotoSerializer(instance=photo, many=True, context=self.context).data
 
     class Meta:     
         model = Product
         fields = '__all__'
         # fields = ['name', 'description', 'caution', 'user', 'price', 'price_prop', 'lat', 'lng', 'photos']
 
-    def create(self, validated_data):
-        instance = Product.objects.create(**validated_data)
-        photo_set = self.context['request'].FILES
-        for photo_data in photo_set.getlist('photo'):
-            ProductPhoto.objects.create(product=instance, photo=photo_data)
-        return instance
+    # def create(self, validated_data):
+    #     instance = Product.objects.create(**validated_data)
+    #     photo_set = self.context['request'].FILES
+    #     for photo_data in photo_set.getlist('photo'):
+    #         ProductPhoto.objects.create(product=instance, photo=photo_data)
+    #     return instance
 
 
-class ProductPostSerializer(serializers.ModelSerializer):
+class ProductPostSerializer(WritableNestedModelSerializer):
     # photo = serializers.ImageField(use_url=True, required=False)
     # photo = serializers.ImageField(source='productphoto.photo')
-    photo = ProductPhotoSerializer() #원래이걸로해써횹
+    # photos = ProductPhotoSerializer(required=False) #원래이걸로해써횹
     # photo2 = ProductPhotoSerializer()
     # photo = serializers.SerializerMethodField()
     # photo2 = serializers.ImageField(use_url=True)
@@ -157,16 +162,33 @@ class ProductPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         # fields = '__all__'
-        fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo']
+        fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5']
         # 다 되고나서 위도경도도 추가할것!
 
-    def create(self, validated_data): #원래이걸로해써횹
-        photo_data = validated_data.pop('photo')
-        product = Product.objects.create(**validated_data)
-        # for photo in photo_data:
-        #     product.photo.create(**photo)
-        ProductPhoto.objects.create(product=product, **photo_data)
-        return product
+    # def create(self, validated_data): #스오플보고 따라하는중
+    #     photos_data = validated_data.pop('photos')
+    #     product = super().create(**validated_data)
+    #     for photo in photos_data:
+    #         photo['product'] = product
+    #         ProductPhoto.objects.create(**photo)
+    #     # ProductPhoto.objects.create(product=product, **photo_data)
+    #     return product
+
+    # def create(self, validated_data): #될뻔한줄알았는데 테스트가 안됨
+    #     photos_data = validated_data.pop('photos')
+    #     product = Product.objects.create(**validated_data)
+    #     for photo in photos_data:
+    #         ProductPhoto.objects.create(product=product, **photos_data)
+    #     # ProductPhoto.objects.create(product=product, **photo_data)
+    #     return product
+
+    # def create(self, validated_data): #원래이걸로해써횹
+    #     photo_data = validated_data.pop('photo')
+    #     product = Product.objects.create(**validated_data)
+    #     # for photo in photo_data:
+    #     #     product.photo.create(**photo)
+    #     ProductPhoto.objects.create(product=product, **photo_data)
+    #     return product
 
     # #Product() got an unexpected keyword argument 'photo'
     # def create(self, validated_data):

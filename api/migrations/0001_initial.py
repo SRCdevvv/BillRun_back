@@ -94,14 +94,14 @@ class Migration(migrations.Migration):
                 ('deal', models.ForeignKey(default=3, on_delete=django.db.models.deletion.CASCADE, to='api.deal')),
             ],
         ),
-        migrations.CreateModel(
-            name='ProductPhoto',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('photo', models.ImageField(blank=True, default='photo/no_image.png', null=True, upload_to=api.models.ProductPhoto.upload_photo)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.product')),
-            ],
-        ),
+        # migrations.CreateModel(
+        #     name='ProductPhoto',
+        #     fields=[
+        #         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('photo', models.ImageField(blank=True, default='photo/no_image.png', null=True, upload_to=api.models.ProductPhoto.upload_photo)),
+        #         ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.product')),
+        #     ],
+        # ),
         migrations.CreateModel(
             name='Favorite',
             fields=[
