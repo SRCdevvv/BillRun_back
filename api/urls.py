@@ -7,9 +7,9 @@ from django.conf import settings
 
 app_name='api'
 router = DefaultRouter()
-router.register('product', ProductViewSet)
-router.register('lend', LendProductViewSet)
-router.register('rent', RentProductViewSet)
+router.register('product', ProductViewSet, 'product')
+router.register('lend', LendProductViewSet, 'lend')
+router.register('rent', RentProductViewSet, 'rent')
 
 urlpatterns = [
     ### Main
@@ -92,6 +92,9 @@ urlpatterns = [
 
     #특정 유저리뷰 상세보기
     path('review/user_id=<int:user_id>', UserReviewDetail.as_view(), name="user_review_detail"), 
+
+    #특정 유저의 물품리뷰 상세보기
+    path('prdt_review/user_id=<int:user_id>', UserProductReview.as_view(), name="user_prdt_review"),
 
     # Favorite 찜 목록
     path('favorite/', FavoriteList.as_view(), name="favorite_list"),

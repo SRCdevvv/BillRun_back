@@ -30,6 +30,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 import json
 
+##########################################################
+# 빌림의 경우, Product의 user가 빌리미, Deal의 user가 드리미다    #
+# 빌려드림의 경우, Product의 user가 드리미, Deal의 user가 빌리미다 #
+##########################################################
+
+
 # fernet = Fernet(ENCODE_KEY)
 
 # # 핸드폰번호 암호화
@@ -628,6 +634,23 @@ class UserReviewDetail(APIView): #특정 유저에 대한 리뷰 가져오기
         if not self.get_dealreview(user_id):
             return Response(f'DealReivew with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
         serializer = DealReviewSerializer(self.get_dealreview(user_id), context={'request': request}, many=True)
+        return Response(serializer.data)
+
+class UserProductReview(APIView): #특정 유저의 모든 물품 리뷰 가져오기
+    def get_prdt_review(self, user_id): 
+        try:
+            # deal.product.lend가 false 이며, user_id가 deal.user 이며, user_id가 user 면 안됨
+            model = ProductReview.objects.filter(Q(deal__product__lend=False, deal__user=user_id) & ~Q(user = user_id) | 
+            # deal.product.lend가 false 이며, user_id가 deal.user 이며, user_id가 user 면 안됨
+            Q(deal__product__lend=True, deal__product__user=user_id) & ~Q(user = user_id))
+            return model
+        except ProductReview.DoesNotExist:
+            return
+
+    def get(self, request, user_id):
+        if not self.get_prdt_review(user_id):
+            return Response(f'Product Review with User ID {user_id} is Not Found in database', status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductReviewSerializer(self.get_prdt_review(user_id), context={'request': request}, many=True)
         return Response(serializer.data)
 
 class ProductReviewPost(APIView): #물품 리뷰 작성

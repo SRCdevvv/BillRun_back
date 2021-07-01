@@ -166,6 +166,17 @@
                     </a>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="{% url 'api:user_prdt_review' user_id=30 %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">특정 유저에 대한 물품 리뷰 리스트</h5>
+                        </div>
+                        <p class="mb-1">/api/prdt_review/user_id=(int:user_id)</p>
+                        <small>특정 유저의 id를 입력하면 해당 유저에 대한 물품 리뷰 리스트가 나옵니다. 예시 id값으로 30을 넣어두었습니다.</small>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     
