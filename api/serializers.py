@@ -122,6 +122,7 @@ class ProductSerializer(serializers.ModelSerializer):
     photo3 = serializers.ImageField(required=False)
     photo4 = serializers.ImageField(required=False)
     photo5 = serializers.ImageField(required=False)
+    count = serializers.SerializerMethodField(source='count_favortie')
 
     # def get_photos(self, obj):
     #     photo = obj.productphoto_set.all()
@@ -131,6 +132,11 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
         # fields = ['name', 'description', 'caution', 'user', 'price', 'price_prop', 'lat', 'lng', 'photos']
+    
+    def get_count(self):
+        count = Favorite.objects.all().aggregate(Count('id'))
+        print(count)
+        return count
 
     # def create(self, validated_data):
     #     instance = Product.objects.create(**validated_data)

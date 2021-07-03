@@ -6,6 +6,7 @@ from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
 from uuid import uuid4
+from django.db.models import Count
 # from BillRun_back.my_settings import *
 
 import hashlib
@@ -271,11 +272,6 @@ class Product(models.Model):
     photo4 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
     photo5 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
 
-    # def __str__(self):
-    #     if self.lend:
-    #         return f"{self.id}) [빌려드림]{self.name} - {self.user.nickname}"
-    #     else:
-    #         return f"{self.id}) [빌림]{self.name} - {self.user.nickname}"
     def __str__(self):
         if self.lend:
             return f"{self.id}) [빌려드림]{self.name}"
