@@ -152,7 +152,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 #각 media 파일에 대한 url
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 #미디어 파일의 경로 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
