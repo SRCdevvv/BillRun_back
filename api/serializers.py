@@ -97,7 +97,7 @@ class PPSerializer(serializers.ModelSerializer): #간단
     class Meta:
         model = Product
         # fields = '__all__'
-        fields = ['name']
+        fields = ['id', 'name']
 
 
 # class ProductPhotoSerializer(serializers.ModelSerializer): #물품사진불러올때
@@ -122,7 +122,7 @@ class ProductSerializer(serializers.ModelSerializer):
     photo3 = serializers.ImageField(required=False)
     photo4 = serializers.ImageField(required=False)
     photo5 = serializers.ImageField(required=False)
-    count = serializers.SerializerMethodField(source='count_favortie')
+    # count = serializers.SerializerMethodField(source='count_favortie')
 
     # def get_photos(self, obj):
     #     photo = obj.productphoto_set.all()
@@ -133,10 +133,9 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
         # fields = ['name', 'description', 'caution', 'user', 'price', 'price_prop', 'lat', 'lng', 'photos']
     
-    def get_count(self):
-        count = Favorite.objects.all().aggregate(Count('id'))
-        print(count)
-        return count
+    # def get_count(self):
+    #     count = Favorite.objects.all().aggregate(Count('id'))
+    #     return count
 
     # def create(self, validated_data):
     #     instance = Product.objects.create(**validated_data)
@@ -205,7 +204,7 @@ class ProductPostSerializer(serializers.ModelSerializer):
     
 
 class DealSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
+    product = PPSerializer(read_only=True)
     user = UserSerializer(read_only=True)
     datentime = serializers.DateTimeField(required=False)
     period = serializers.CharField(required=False)
@@ -213,7 +212,7 @@ class DealSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deal
         # fields = '__all__'
-        fields = ('id', 'product_id', 'user', 'period', 'datentime', 'deal_prop', 'deal_option')
+        fields = ('id', 'product', 'user', 'period', 'datentime', 'deal_prop')
 
 
 class DDSerializer(serializers.ModelSerializer):
