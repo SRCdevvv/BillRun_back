@@ -38,22 +38,24 @@ INSTALLED_APPS = [
     # 'account',
     
     # 'django.contrib.admin',
-    'BillRun_back.apps.MyAdminConfig',
+
+    # 'BillRun_back.apps.MyAdminConfig',
+    'BillRun_back.apps',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'six',
+    # 'six',
+
+    #apps
+    'api',
 
     #drf
     'rest_framework',
     'rest_framework.authtoken',
     # 'rest_framework_simplejwt.token_blacklist',
-    
-    #apps
-    'api',
 ]
 
 MIDDLEWARE = [
@@ -103,13 +105,14 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = "api.BillRunUser"
+AUTH_USER_MODEL = 'api.BillrunUser'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 AUTHENTICATION_BACKENDS = (
+    # 'django.contrib.auth.backends.ModelBackend',
     'api.auth_backend.PasswordlessAuthBackend',
 )
 
@@ -180,7 +183,7 @@ JWT_AUTH = {
     'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_ALGORITHM': 'HS256', # 암호화 알고리즘
     'JWT_ALLOW_REFRESH': True, # refresh 사용 여부
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7), # 유효기간 설정
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5), # 유효기간 설정
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=60), # JWT 토큰 갱신 유효기간
     # access token이 만료되면 refresh token 확인 후 다시 발급. refresh token도 만료되면 로그인 해야함
 
