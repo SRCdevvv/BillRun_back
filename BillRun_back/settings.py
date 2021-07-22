@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     #apps
     'api',
+    # 'BillRun_back.apps.api',
 
     #drf
     'rest_framework',
