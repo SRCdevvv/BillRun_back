@@ -158,8 +158,8 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     community = models.CharField(max_length=30, choices=Group)
     email = models.EmailField(max_length=254, unique=True)
     nickname = models.CharField(max_length=20, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6, default=0) #위도
-    lng = models.DecimalField(max_digits=9, decimal_places=6, default=0) #경도
+    lat = models.DecimalField(max_digits=9, decimal_places=6, default=37.55723) #위도
+    lng = models.DecimalField(max_digits=9, decimal_places=6, default=127.04539) #경도
     location = models.CharField(max_length=50, default='', null=True, blank=True)
 
     money = models.IntegerField(default=0)
@@ -253,8 +253,8 @@ class Product(models.Model):
     hits = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(BillrunUser, null=True, default=DEFAULT_PK, on_delete=models.SET_NULL)
-    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #위도
-    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=0) #경도
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=37.55723) #위도
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, default=127.04539) #경도
     location = models.CharField(max_length=50, default='', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add = True, null= True)
     updated_at = models.DateTimeField(auto_now = True, null= True)
