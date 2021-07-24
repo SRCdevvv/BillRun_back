@@ -115,8 +115,8 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.CharField(required=False)
     price_prop = serializers.CharField(required=False)
     user = UUSerializer(read_only=True)
-    lat = serializers.IntegerField(required=False)
-    lng = serializers.IntegerField(required=False)
+    lat = serializers.FloatField(required=False)
+    lng = serializers.FloatField(required=False)
     photo1 = serializers.ImageField(required=False)
     photo2 = serializers.ImageField(required=False)
     photo3 = serializers.ImageField(required=False)
@@ -166,7 +166,7 @@ class ProductPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         # fields = '__all__'
-        fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5']
+        fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'lat', 'lng', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5']
         # 다 되고나서 위도경도도 추가할것!
 
     # def create(self, validated_data): #스오플보고 따라하는중
