@@ -327,11 +327,12 @@ class Deal(models.Model):
     user = models.ForeignKey(BillrunUser, null=True,  default=DEFAULT_PK, on_delete=models.SET_NULL)
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
 
-    # def __str__(self):
-    #     if self.product.lend:
-    #         return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
-    #     else:
-    #         return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
+    # def save(self, *args, **kwargs):
+    #     self.product.id = None
+    #     self.product.pk = None
+    #     self.save()
+    #     super(Deal, self).save(*args, **kwargs)
+
     def __str__(self):
         if self.product.lend:
             return f"{self.id}) [빌려드림]{self.product.name}"
