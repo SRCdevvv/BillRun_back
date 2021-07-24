@@ -9,6 +9,7 @@ from uuid import uuid4
 from django.db.models import Count
 # from BillRun_back.my_settings import *
 
+from urllib.parse import quote
 import hashlib
 import hmac
 import base64
@@ -266,6 +267,12 @@ class Product(models.Model):
         extension = os.path.splitext(filename)[-1].lower()
         path = f'{ymd_path}/photo/{uuid_name + extension}'
         return path
+
+    # def set_default(self, url):
+    #     url_list = url.split('%2F')
+    #     # url_quote = quote(url_list[1], safe='')
+    #     full_url = f'{url_list[0]}%2F{url_list[1]}'
+    #     return 
         
     photo1 = models.URLField(default="https://firebasestorage.googleapis.com/v0/b/billrun-314101.appspot.com/o/default%2Fno_image.png?alt=media&token=63b79d71-65a3-4706-b9f2-23d65503e288")
     photo2 = models.URLField(null=True, blank=True)
