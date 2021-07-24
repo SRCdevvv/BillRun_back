@@ -117,11 +117,11 @@ class ProductSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
-    photo1 = serializers.ImageField(required=False)
-    photo2 = serializers.ImageField(required=False)
-    photo3 = serializers.ImageField(required=False)
-    photo4 = serializers.ImageField(required=False)
-    photo5 = serializers.ImageField(required=False)
+    # photo1 = models.URLField(required=False)
+    # photo2 = models.URLField(required=False)
+    # photo3 = models.URLField(required=False)
+    # photo4 = models.URLField(required=False)
+    # photo5 = models.URLField(required=False)
     # count = serializers.SerializerMethodField(source='count_favortie')
 
     # def get_photos(self, obj):

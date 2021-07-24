@@ -172,7 +172,8 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         path = f'{ymd_path}/user/{uuid_name + extension}'
         return path
 
-    profile = models.ImageField(upload_to=upload_profile, default=profile_default)
+    # profile = models.ImageField(upload_to=upload_profile, default=profile_default)
+    profile = models.URLField(default="https://firebasestorage.googleapis.com/v0/b/billrun-314101.appspot.com/o/default%2Fdefault_u[…]?alt=media&token=08fe3895-fdce-40f9-9176-a62bde9a879b")
 
     def __str__(self):
         return f"{self.id}) {self.nickname}"
@@ -180,7 +181,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
-    is_active = models.BooleanField(default=False)    #TODO
+    is_active = models.BooleanField(default=False)    
     is_admin = models.BooleanField(default=False)    
     is_superuser = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False)
@@ -266,11 +267,17 @@ class Product(models.Model):
         path = f'{ymd_path}/photo/{uuid_name + extension}'
         return path
         
-    photo1 = models.ImageField(upload_to=upload_photo, default=photo_default)
-    photo2 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
-    photo3 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
-    photo4 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
-    photo5 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    photo1 = models.URLField(default="https://firebasestorage.googleapis.com/v0/b/billrun-314101.appspot.com/o/default%2Fno_image.png?alt=media&token=63b79d71-65a3-4706-b9f2-23d65503e288")
+    photo2 = models.URLField(null=True, blank=True)
+    photo3 = models.URLField(null=True, blank=True)
+    photo4 = models.URLField(null=True, blank=True)
+    photo5 = models.URLField(null=True, blank=True)
+
+    # photo1 = models.ImageField(upload_to=upload_photo, default=photo_default)
+    # photo2 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    # photo3 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    # photo4 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
+    # photo5 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
 
     def __str__(self):
         if self.lend:
