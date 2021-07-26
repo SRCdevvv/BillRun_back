@@ -390,19 +390,19 @@ class ProductPost(generics.CreateAPIView): #물품등록
     serializer_class = ProductPostSerializer
 
 class LendProductViewSet(viewsets.ModelViewSet): #빌려주는 물품 목록(빌려드림)
-    queryset = Product.objects.filter(lend=True)
+    queryset = Product.objects.filter(lend=True).order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name']
 
 class RentProductViewSet(viewsets.ModelViewSet): #빌리는 물품 목록(빌림)
-    queryset = Product.objects.filter(lend=False)
+    queryset = Product.objects.filter(lend=False).order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name']
 
 class ProductViewSet(viewsets.ModelViewSet):#전체 물품 목록
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name'] #?search=여성
@@ -447,7 +447,7 @@ class ProductViewSet(viewsets.ModelViewSet):#전체 물품 목록
 class ProductCategoryList(APIView): #카테고리별 물품 API
     def get_category(self, ctgr):
         try:
-            model = Product.objects.filter(category=ctgr)
+            model = Product.objects.filter(category=ctgr).order_by('-created_at')
             return model
         except Product.DoesNotExist:
             return
@@ -461,7 +461,7 @@ class ProductCategoryList(APIView): #카테고리별 물품 API
 class UserLendProductList(APIView): #특정 유저가 빌려주는 물품 리스트
     def get_product(self, user_id):
         try:
-            model = Product.objects.filter(user=user_id, lend=True)
+            model = Product.objects.filter(user=user_id, lend=True).order_by('-created_at')
             return model
         except Product.DoesNotExist:
             return
@@ -475,7 +475,7 @@ class UserLendProductList(APIView): #특정 유저가 빌려주는 물품 리스
 class UserRentProductList(APIView): #특정 유저가 빌리는 물품 리스트
     def get_product(self, user_id): 
         try:
-            model = Product.objects.filter(user=user_id, lend=False)
+            model = Product.objects.filter(user=user_id, lend=False).order_by('-created_at')
             return model
         except Product.DoesNotExist:
             return
@@ -528,7 +528,7 @@ class ProductDetail(APIView): #상품 상세보기
 #### Deal
 class DealList(APIView): 
     def get(self, request): #전체 거래 목록
-        model = Deal.objects.all()
+        model = Deal.objects.all().order_by('-created_at')
         serializer = DealSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
@@ -566,7 +566,7 @@ class LendDealList(APIView): #특정 유저의 빌려준 거래 리스트
     def get_deal(self, user_id):
         try:
             # model = Deal.objects.get(id=user_id)
-            model = Deal.objects.filter(Q(user=user_id, product__lend=False) | Q(product__user=user_id, product__lend=True))
+            model = Deal.objects.filter(Q(user=user_id, product__lend=False) | Q(product__user=user_id, product__lend=True)).order_by('-created_at')
             return model
         except Deal.DoesNotExist:
             return
@@ -581,7 +581,7 @@ class RentDealList(APIView): #특정 유저가 빌린 거래 리스트
     def get_deal(self, user_id): 
         try:
             # model = Deal.objects.get(id=user_id)
-            model = Deal.objects.filter(Q(user=user_id, product__lend=True) | Q(product__user=user_id, product__lend=False))
+            model = Deal.objects.filter(Q(user=user_id, product__lend=True) | Q(product__user=user_id, product__lend=False)).order_by('-created_at')
             return model
         except Deal.DoesNotExist:
             return
@@ -625,7 +625,7 @@ class DealReviewPost(APIView):
 class UserReviewDetail(APIView): #특정 유저에 대한 리뷰 가져오기
     def get_dealreview(self, user_id):
         try:
-            model = DealReview.objects.filter(Q(Q(deal__user=user_id)|Q(deal__product__user=user_id)) & ~Q(user = user_id))
+            model = DealReview.objects.filter(Q(Q(deal__user=user_id)|Q(deal__product__user=user_id)) & ~Q(user = user_id)).order_by('-created_at')
             return model
         except DealReview.DoesNotExist:
             return
@@ -642,7 +642,7 @@ class UserProductReview(APIView): #특정 유저의 모든 물품 리뷰 가져�
             # deal.product.lend가 false 이며, user_id가 deal.user 이며, user_id가 user 면 안됨
             model = ProductReview.objects.filter(Q(deal__product__lend=False, deal__user=user_id) & ~Q(user = user_id) | 
             # deal.product.lend가 false 이며, user_id가 deal.user 이며, user_id가 user 면 안됨
-            Q(deal__product__lend=True, deal__product__user=user_id) & ~Q(user = user_id))
+            Q(deal__product__lend=True, deal__product__user=user_id) & ~Q(user = user_id)).order_by('-created_at')
             return model
         except ProductReview.DoesNotExist:
             return
@@ -666,7 +666,7 @@ class ProductReviewPost(APIView): #물품 리뷰 작성
 class ProductReviewDetail(APIView): #특정 물품에 대한 리뷰 가져오기
     def get_pro_review(self, product_id):
         try:
-            model = ProductReview.objects.filter(deal__product__id=product_id)
+            model = ProductReview.objects.filter(deal__product__id=product_id).order_by('-created_at')
             return model
         except ProductReview.DoesNotExist:
             return
@@ -737,7 +737,7 @@ def product_like_toggle(request, product_id):
 
 class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 참고용!)
     def get(self, request): 
-        model = Favorite.objects.all()
+        model = Favorite.objects.all().order_by('-created_at')
         serializer = FavoriteSerializer(model, many=True)
         return Response(serializer.data)
 
@@ -751,7 +751,7 @@ class FavoriteList(APIView): #전체 좋아요 목록(이건 그냥 개발시 �
 class FavoriteDetail(APIView):
     def get_favorite(self, user_id):#특정 유저에 대한 좋아요 가져오기
         try:
-            model = Favorite.objects.filter(user_id=user_id)
+            model = Favorite.objects.filter(user_id=user_id).order_by('-created_at')
             return model
         except Favorite.DoesNotExist:
             return
@@ -774,7 +774,7 @@ class FavoriteDetail(APIView):
 #### Notice
 class NoticeList(APIView):
     def get(self, request): 
-        model = Notice.objects.all()
+        model = Notice.objects.all().order_by('-created_at')
         serializer = NoticeSerializer(model, context={'request': request}, many=True)
         return Response(serializer.data)
 
