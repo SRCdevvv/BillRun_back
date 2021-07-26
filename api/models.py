@@ -174,7 +174,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         return path
 
     # profile = models.ImageField(upload_to=upload_profile, default=profile_default)
-    profile = models.URLField(default="https://firebasestorage.googleapis.com/v0/b/billrun-314101.appspot.com/o/default%2Fdefault_u[…]?alt=media&token=08fe3895-fdce-40f9-9176-a62bde9a879b")
+    profile = models.CharField(max_length=200, default="default%2Fdefault_u[…]?alt=media&token=08fe3895-fdce-40f9-9176-a62bde9a879b")
 
     def __str__(self):
         return f"{self.id}) {self.nickname}"
@@ -274,11 +274,11 @@ class Product(models.Model):
     #     full_url = f'{url_list[0]}%2F{url_list[1]}'
     #     return 
         
-    photo1 = models.URLField(default="https://firebasestorage.googleapis.com/v0/b/billrun-314101.appspot.com/o/default%2Fno_image.png?alt=media&token=63b79d71-65a3-4706-b9f2-23d65503e288")
-    photo2 = models.URLField(null=True, blank=True)
-    photo3 = models.URLField(null=True, blank=True)
-    photo4 = models.URLField(null=True, blank=True)
-    photo5 = models.URLField(null=True, blank=True)
+    photo1 = models.CharField(max_length=200, default="default%2Fno_image.png?alt=media&token=63b79d71-65a3-4706-b9f2-23d65503e288")
+    photo2 = models.CharField(max_length=200, null=True, blank=True)
+    photo3 = models.CharField(max_length=200, null=True, blank=True)
+    photo4 = models.CharField(max_length=200, null=True, blank=True)
+    photo5 = models.CharField(max_length=200, null=True, blank=True)
 
     # photo1 = models.ImageField(upload_to=upload_photo, default=photo_default)
     # photo2 = models.ImageField(upload_to=upload_photo, null=True, blank=True)
@@ -327,12 +327,11 @@ class Deal(models.Model):
     user = models.ForeignKey(BillrunUser, null=True,  default=DEFAULT_PK, on_delete=models.SET_NULL)
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
 
-    # def save(self, *args, **kwargs):
-    #     self.product.id = None
-    #     self.product.pk = None
-    #     self.save()
-    #     super(Deal, self).save(*args, **kwargs)
-
+    # def __str__(self):
+    #     if self.product.lend:
+    #         return f"{self.id}) [빌려드림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
+    #     else:
+    #         return f"{self.id}) [빌림]{self.product.name} ({self.product.user.nickname} >> {self.user.nickname})"
     def __str__(self):
         if self.product.lend:
             return f"{self.id}) [빌려드림]{self.product.name}"

@@ -163,6 +163,26 @@ class ProductPostSerializer(serializers.ModelSerializer):
     #     photo = obj.productphoto_set.all()
     #     return ProductPhotoSerializer(instance=photo, many=True).data
 
+    def create(self, validated_data):
+        obj = Product.objects.create(**validated_data)
+        if '/o/' in obj.photo1:
+            url_list = obj.photo1.split('/o/')
+            obj.photo1 = url_list[1]
+        if '/o/' in obj.photo2:
+            url_list = obj.photo2.split('/o/')
+            obj.photo2 = url_list[1]
+        if '/o/' in obj.photo3:
+            url_list = obj.photo3.split('/o/')
+            obj.photo3 = url_list[1]
+        if '/o/' in obj.photo4:
+            url_list = obj.photo4.split('/o/')
+            obj.photo4 = url_list[1]
+        if '/o/' in obj.photo5:
+            url_list = obj.photo5.split('/o/')
+            obj.photo5 = url_list[1]
+        obj.save()
+        return obj
+   
     class Meta:
         model = Product
         # fields = '__all__'
