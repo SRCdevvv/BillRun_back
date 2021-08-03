@@ -820,8 +820,8 @@ class NoticeDetail(APIView): #이벤트 상세보기
 @api_view(["GET", "POST"])
 @permission_classes([permissions.IsAuthenticated])
 def chat_view(request):
-    opponent = BillrunUser.objects.get(id = request.data["opponent"])
     if request.method == "POST":
+        opponent = BillrunUser.objects.get(id = request.data["opponent"])
         room = (ChatRoom.objects.filter(from_user = request.user, to_user= opponent)|ChatRoom.objects.filter(to_user = request.user, from_user= opponent)).first()
         if not room:
             room = ChatRoom.objects.create(from_user = request.user, to_user= opponent)
