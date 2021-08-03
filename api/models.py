@@ -1,3 +1,5 @@
+import uuid
+from uuid import uuid4
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -5,7 +7,6 @@ from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
-from uuid import uuid4
 from django.db.models import Count
 # from BillRun_back.my_settings import *
 
@@ -473,3 +474,14 @@ class Notice(models.Model):
         return f"{self.id}) {self.title}"
     banner_photo = models.ImageField(upload_to=upload_banner)
     content_photo = models.ImageField(upload_to=upload_contentphoto, null=True, blank=True)
+
+class ChatRoom(models.Model):
+    from_user = models.ForeignKey(BillrunUser, on_delete=models.SET_NULL, null= True, related_name= "from_rooms")
+    to_user = models.ForeignKey(BillrunUser, on_delete=models.SET_NULL, null= True, related_name= "to_rooms")
+    created_at = models.DateTimeField(auto_now_add = True)
+
+class Chat(models.Model):
+    user = models.ForeignKey(BillrunUser, on_delete= models.SET_NULL, null= True, related_name= "chats")
+    room = models.ForeignKey(ChatRoom, on_delete= models.CASCADE, related_name= "chats")
+    message = models.TextField(null= True, blank= True)
+    created_at = models.DateTimeField(auto_now_add = True)

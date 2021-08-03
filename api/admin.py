@@ -24,6 +24,8 @@ admin_site.register(Favorite)
 admin_site.register(Notice)
 admin_site.register(AuthSms, AuthSmsAdmin)
 admin_site.register(Terms)
+admin_site.register(ChatRoom)
+admin_site.register(Chat)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
