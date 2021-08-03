@@ -9,6 +9,26 @@ import datetime
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
+def serialize_chat(chat):
+    return {
+        "user":chat.user.pk,
+        "room":chat.room.pk,
+        "message":chat.message,
+        "created_at":chat.created_at
+    }
+
+def serialize_chats(chats):
+    return [serialize_chat(chat) for chat in chats]
+
+def serialize_room(room):
+    return {
+        "from_user":room.from_user.pk,
+        "to_user":room.to_user.pk,
+        "chats":serialize_chats(room.to_chats)
+    }
+
+def serializer_rooms(rooms):
+    return [serialize_room(room) for room in rooms]
 
 class UUSerializer(serializers.ModelSerializer): #간단쓰
     class Meta:

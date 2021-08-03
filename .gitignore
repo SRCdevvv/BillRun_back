@@ -1,3 +1,4 @@
 my_settings.py
 api/secret.py
 api/encode.py
+*.pyc

@@ -88,6 +88,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'BillRun_back.wsgi.application'
+# ASGI_APPLICATION = "BillRun_back.asgi.application"
 
 
 # Database

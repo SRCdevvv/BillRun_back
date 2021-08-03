@@ -1,10 +1,12 @@
 # from django.core.checks import messages
 from django.core.validators import validate_email
+from django.db.models.query import Prefetch
 # from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.utils.encoding import force_bytes, force_text
 from rest_framework import viewsets
+from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
@@ -814,3 +816,28 @@ class NoticeDetail(APIView): #이벤트 상세보기
         model = self.get_notice(notice_id)
         model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET", "POST"])
+@permission_classes([permissions.IsAuthenticated])
+def chat_view(request):
+    if request.method == "POST":
+        opponent = BillrunUser.objects.get(id = request.data["opponent"])
+        room = (ChatRoom.objects.filter(from_user = request.user, to_user= opponent)|ChatRoom.objects.filter(to_user = request.user, from_user= opponent)).first()
+        if not room:
+            room = ChatRoom.objects.create(from_user = request.user, to_user= opponent)
+        Chat.objects.create(
+            user = request.user,
+            message = request.data.get("message"),
+            room = room
+        )
+
+    rooms = (ChatRoom.objects.filter(from_user = request.user)|ChatRoom.objects.filter(to_user= request.user)).\
+    prefetch_related(
+        Prefetch(
+            "chats",
+            queryset=Chat.objects.all().order_by("-created_at"),
+            to_attr= "to_chats"
+        )
+    ).order_by("-created_at")
+
+    return Response(serializer_rooms(rooms))
