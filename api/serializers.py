@@ -30,6 +30,7 @@ def serialize_room(room):
 def serializer_rooms(rooms):
     return [serialize_room(room) for room in rooms]
 
+
 class UUSerializer(serializers.ModelSerializer): #간단쓰
     class Meta:
         model = BillrunUser

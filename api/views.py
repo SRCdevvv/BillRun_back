@@ -818,7 +818,7 @@ class NoticeDetail(APIView): #이벤트 상세보기
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(["GET", "POST"])
-@permission_classes([permissions.IsAuthenticated])
+# @permission_classes([permissions.IsAuthenticated])
 def chat_view(request):
     if request.method == "POST":
         opponent = BillrunUser.objects.get(id = request.data["opponent"])
@@ -835,9 +835,24 @@ def chat_view(request):
     prefetch_related(
         Prefetch(
             "chats",
-            queryset=Chat.objects.all().order_by("-created_at"),
+            queryset=Chat.objects.all(),
             to_attr= "to_chats"
         )
     ).order_by("-created_at")
 
     return Response(serializer_rooms(rooms))
+
+# @permission_classes([AllowAny])
+class ChatRoomDetail(APIView): #채팅방 상세보기
+    def get(self, request, chatroom_id):
+        rooms = (ChatRoom.objects.filter(id=chatroom_id)).\
+        prefetch_related(
+            Prefetch(
+                "chats",
+                queryset=Chat.objects.all(),
+                to_attr= "to_chats"
+            )
+        ).order_by("-created_at")
+
+        return Response(serializer_rooms(rooms))
+

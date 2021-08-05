@@ -29,6 +29,7 @@ admin_site.register(Chat)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'phone',
         'nickname',
         'email',
@@ -37,6 +38,7 @@ class UserAdmin(admin.ModelAdmin):
     )
 
     list_display_links = (
+        'id',
         'phone',
         'nickname',
         'email'

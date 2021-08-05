@@ -252,6 +252,15 @@
                         <small>특정 유저의 id를 입력하면 해당 유저에 대한 물품 리뷰 리스트가 나옵니다. 예시 id값으로 30을 넣어두었습니다.</small>
                     </a>
                 </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'api:chat' %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">채팅</h5>
+                        </div>
+                        <p class="mb-1">/api/chat</p>
+                        <small>❗️Authorization 헤더 필요❗️<br>채팅 api입니다. 뒤에 숫자를 입력하면 해당 id의 채팅방을 볼 수 있습니다.</small>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

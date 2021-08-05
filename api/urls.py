@@ -104,5 +104,7 @@ urlpatterns = [
     path('notice/', NoticeList.as_view(), name="notice"),
     path('notice/<int:notice_id>', NoticeDetail.as_view(), name="notice_detail"),
 
-    path('chat/', chat_view, name="chat")
+    # Chat
+    path('chat/', chat_view, name="chat"), #채팅방 리스트
+    path('chat/<int:chatroom_id>', ChatRoomDetail.as_view(), name="chatroom_detail"), #채팅방 상세보기
 ] 
