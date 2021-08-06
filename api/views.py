@@ -835,7 +835,7 @@ def chat_view(request):
     prefetch_related(
         Prefetch(
             "chats",
-            queryset=Chat.objects.all(),
+            queryset=Chat.objects.all().order_by("-created_at"),
             to_attr= "to_chats"
         )
     ).order_by("-created_at")
