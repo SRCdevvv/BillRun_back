@@ -23,7 +23,11 @@ def serialize_chats(chats):
 def serialize_room(room):
     return {
         "from_user":room.from_user.pk,
+        "from_user_name":room.from_user.nickname,
+        "from_user_photo":room.from_user.profile,
         "to_user":room.to_user.pk,
+        "to_user_name":room.to_user.nickname,
+        "to_user_photo":room.to_user.profile,
         "chats":serialize_chats(room.to_chats)
     }
 
