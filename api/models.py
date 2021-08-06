@@ -175,7 +175,7 @@ class BillrunUser(AbstractBaseUser, PermissionsMixin):
         return path
 
     # profile = models.ImageField(upload_to=upload_profile, default=profile_default)
-    profile = models.CharField(max_length=200, default="default%2Fdefault_u[…]?alt=media&token=08fe3895-fdce-40f9-9176-a62bde9a879b")
+    profile = models.CharField(max_length=200, default="default%2Fdefault_user.png?alt=media&token=08fe3895-fdce-40f9-9176-a62bde9a879b")
 
     def __str__(self):
         return f"{self.id}) {self.nickname}"
@@ -381,48 +381,6 @@ class DealReview(models.Model):
     #     return f"{self.user.nickname} - {self.deal}"
     def __str__(self):
         return f"{self.deal} - {self.user.nickname}"
-
-    # def billrun_score(self):
-    #     # 거래리뷰의 작성자가 아닌 상대방을 불러와야 한다.
-    #     # 1. 거래에 참여하는 양측만이 작성할 수 있어야 한다. ㅇ
-    #     # 2. 거래리뷰의 작성자가 아닌 상대방을 불러오고 ㅇ
-    #     # 3. 빌려주는 경우/빌리는 경우로 나눠서 점수 합산 ㅇ
-    #     # 내일 이거 실험해보고 함수 줄이자
-    #     if self.user == (self.deal.product.user or self.deal.user): #1번
-    #         if self.user == self.deal.user: #2번
-    #             user = BillrunUser.objects.get(id=self.deal.product.user.id)
-    #         elif self.user == self.deal.product.user:
-    #             user = BillrunUser.objects.get(id=self.deal.user.id)
-    #         print(user)
-    #         #점수합산
-    #         if self.q1 == "상":
-    #             user.score += 0.4
-    #         elif self.q1 == "중":
-    #             user.score += 0.3
-    #         elif self.q1 == "하":
-    #             user.score -= 0.2
-    #         if self.q2 == "상":
-    #             user.score += 0.4
-    #         elif self.q2 == "중":
-    #             user.score += 0.3
-    #         elif self.q2 == "하":
-    #             user.score -= 0.2
-    #         if self.deal.product.lend: #3번 #빌려주는 경우 q123
-    #             if self.q3 == "상":
-    #                 user.score += 0.4
-    #             elif self.q3 == "중":
-    #                 user.score += 0.3
-    #             elif self.q3 == "하":
-    #                 user.score -= 0.2
-    #         else: #빌리는 경우 q124
-    #             if self.q4 == "상":
-    #                 user.score += 0.4
-    #             elif self.q4 == "중":
-    #                 user.score += 0.3
-    #             elif self.q4 == "하":
-    #                 user.score -= 0.2
-    #     user.save()
-    #     # return user
 
 class ProductReview(models.Model):
     DEFAULT_PK=1
