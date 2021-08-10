@@ -437,6 +437,7 @@ class ChatRoom(models.Model):
     from_user = models.ForeignKey(BillrunUser, on_delete=models.SET_NULL, null= True, related_name= "from_rooms")
     to_user = models.ForeignKey(BillrunUser, on_delete=models.SET_NULL, null= True, related_name= "to_rooms")
     created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True, null= True)
 
 class Chat(models.Model):
     user = models.ForeignKey(BillrunUser, on_delete= models.SET_NULL, null= True, related_name= "chats")

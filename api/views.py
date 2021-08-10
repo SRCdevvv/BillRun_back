@@ -830,6 +830,8 @@ def chat_view(request):
             message = request.data.get("message"),
             room = room
         )
+        # room.updated_at = datetime.now()
+        room.save()
 
     rooms = (ChatRoom.objects.filter(from_user = request.user)|ChatRoom.objects.filter(to_user= request.user)).\
     prefetch_related(
@@ -838,7 +840,7 @@ def chat_view(request):
             queryset=Chat.objects.all().order_by("-created_at"),
             to_attr= "to_chats"
         )
-    ).order_by("-created_at")
+    ).order_by("-updated_at")
 
     return Response(serializer_rooms(rooms))
 
