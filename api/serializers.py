@@ -125,14 +125,6 @@ class PPSerializer(serializers.ModelSerializer): #간단
         fields = ['id', 'name']
 
 
-# class ProductPhotoSerializer(serializers.ModelSerializer): #물품사진불러올때
-#     photo = serializers.ImageField(use_url=True)
-
-#     class Meta:
-#         model = ProductPhoto
-#         fields = ['photo']
-
-
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
@@ -142,52 +134,14 @@ class ProductSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
-    # photo1 = models.URLField(required=False)
-    # photo2 = models.URLField(required=False)
-    # photo3 = models.URLField(required=False)
-    # photo4 = models.URLField(required=False)
-    # photo5 = models.URLField(required=False)
-    # count = serializers.SerializerMethodField(source='count_favortie')
-
-    # def get_photos(self, obj):
-    #     photo = obj.productphoto_set.all()
-    #     return ProductPhotoSerializer(instance=photo, many=True, context=self.context).data
 
     class Meta:     
         model = Product
         fields = '__all__'
         # fields = ['name', 'description', 'caution', 'user', 'price', 'price_prop', 'lat', 'lng', 'photos']
-    
-    # def get_count(self):
-    #     count = Favorite.objects.all().aggregate(Count('id'))
-    #     return count
-
-    # def create(self, validated_data):
-    #     instance = Product.objects.create(**validated_data)
-    #     photo_set = self.context['request'].FILES
-    #     for photo_data in photo_set.getlist('photo'):
-    #         ProductPhoto.objects.create(product=instance, photo=photo_data)
-    #     return instance
 
 
 class ProductPostSerializer(serializers.ModelSerializer):
-    # photo = serializers.ImageField(use_url=True, required=False)
-    # photo = serializers.ImageField(source='productphoto.photo')
-    # photos = ProductPhotoSerializer(required=False) #원래이걸로해써횹
-    # photo2 = ProductPhotoSerializer()
-    # photo = serializers.SerializerMethodField()
-    # photo2 = serializers.ImageField(use_url=True)
-    # photos = serializers.ImageField()
-
-    # def create(self, validated_data):
-    #     photos = validated_data.get("photos", {}).get('photo') #'InMemoryUploadedFile' object has no attribute 'get'
-    #     # photos = validated_data.get("p", {}).get('photo') #`create()` did not return an object instance.
-    #     return photos
-
-    # def get_photos(self, obj):
-    #     photo = obj.productphoto_set.all()
-    #     return ProductPhotoSerializer(instance=photo, many=True).data
-
     def create(self, validated_data):
         obj = Product.objects.create(**validated_data)
         if '/o/' in obj.photo1:
@@ -214,39 +168,6 @@ class ProductPostSerializer(serializers.ModelSerializer):
         fields = ['lend', 'name', 'category', 'description', 'caution', 'user', 'price', 'price_prop', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5']
         # 다 되고나서 위도경도도 추가할것!
 
-    # def create(self, validated_data): #스오플보고 따라하는중
-    #     photos_data = validated_data.pop('photos')
-    #     product = super().create(**validated_data)
-    #     for photo in photos_data:
-    #         photo['product'] = product
-    #         ProductPhoto.objects.create(**photo)
-    #     # ProductPhoto.objects.create(product=product, **photo_data)
-    #     return product
-
-    # def create(self, validated_data): #될뻔한줄알았는데 테스트가 안됨
-    #     photos_data = validated_data.pop('photos')
-    #     product = Product.objects.create(**validated_data)
-    #     for photo in photos_data:
-    #         ProductPhoto.objects.create(product=product, **photos_data)
-    #     # ProductPhoto.objects.create(product=product, **photo_data)
-    #     return product
-
-    # def create(self, validated_data): #원래이걸로해써횹
-    #     photo_data = validated_data.pop('photo')
-    #     product = Product.objects.create(**validated_data)
-    #     # for photo in photo_data:
-    #     #     product.photo.create(**photo)
-    #     ProductPhoto.objects.create(product=product, **photo_data)
-    #     return product
-
-    # #Product() got an unexpected keyword argument 'photo'
-    # def create(self, validated_data):
-    #     instance = Product.objects.create(**validated_data)
-    #     photo_set = self.context['request'].FILES
-    #     for photo_data in photo_set.getlist('photo'):
-    #         ProductPhoto.objects.create(product=instance, photo=photo_data)
-    #     return instance
-    
 
 class DealSerializer(serializers.ModelSerializer):
     product = PPSerializer(read_only=True)
@@ -266,11 +187,6 @@ class DDSerializer(serializers.ModelSerializer):
         model = Deal
         fields = ['product']
 
-
-# class ReviewSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Review
-#         fields = '__all__'
 
 class DealReviewSerializer(serializers.ModelSerializer):
     user = UUSerializer(read_only=True)
