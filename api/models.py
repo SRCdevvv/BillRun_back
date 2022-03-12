@@ -8,8 +8,8 @@ from django.utils import timezone
 from cryptography.fernet import Fernet
 from random import randint
 from django.db.models import Count
-# from BillRun_back.my_settings import *
-
+from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from urllib.parse import quote
 import hashlib
 import hmac
@@ -19,15 +19,31 @@ import time
 import json
 import os
 
+### API KEY
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+
 profile_default = 'default/default_user.png'
 photo_default = 'default/no_image.png'
 
 #SMS
-PHONE = '01066278667'
-NAVER_ACCESS_KEY = '9MMMH1wL9iCCYZzSpOB2'
-NAVER_SECRET_KEY = '1Ym0fRLpuxOz7YD92w7ppy7YqLeT48pjPFdhLzwx'
-SMS_SECRET_KEY = '2d99e064782c4640b5816ee9d762e792'
-SMS_SERVICE_ID = 'ncp:sms:kr:266096135165:billrun'
+PHONE = get_secret("PHONE")
+NAVER_ACCESS_KEY = get_secret("NAVER_ACCESS_KEY")
+NAVER_SECRET_KEY = get_secret("NAVER_SECRET_KEY")
+SMS_SECRET_KEY = get_secret("SMS_SECRET_KEY")
+SMS_SERVICE_ID = get_secret("SMS_SERVICE_ID")
 
 # fernet = Fernet(ENCODE_KEY)
 
@@ -78,6 +94,7 @@ class AuthSms(models.Model):
         requests.post(apiUrl, headers=headers, data=json.dumps(body))
 
 
+# 이전 User 모델
 # class User(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 #     nickname = models.CharField(max_length=10, default='', unique=True)

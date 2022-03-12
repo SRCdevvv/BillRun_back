@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, json
 import datetime
+from django.core.exceptions import ImproperlyConfigured
 # from .my_settings import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,7 +25,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = DJ_SECRET
-SECRET_KEY = 'ujy)dydlrzl_pya01zg4%fe&bji^u_9o$d9a3@m@$2!xem5atj'
+
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -208,8 +222,7 @@ JWT_AUTH = {
 EMAIL_HOST = 'smtp.gmail.com' 		 # 메일 호스트 서버
 EMAIL_PORT = '587' 			 # 서버 포트
 EMAIL_HOST_USER = 'sarangchecompany@gmail.com' 	 # 우리가 사용할 Gmail
-# EMAIL_HOST_PASSWORD = 'src121212'		 # 우리가 사용할 Gmail pw
-EMAIL_HOST_PASSWORD = 'snrtowerzridfacd' #앱비밀번호
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD") #앱비밀번호
 EMAIL_USE_TLS = True			 # TLS 보안 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER	 # 응답 메일 관련 설정
 
